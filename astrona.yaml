@@ -1,0 +1,84 @@
+# Preparation scaffold. Technical pages stay draft until authoring and review.
+training:
+  id: ATS083
+  title: 'CKNE: Core Infrastructure and CNI'
+  description: Preparation scaffold for Core Infrastructure and CNI. Lessons and environments are planned.
+  certification:
+    name: Certified Kubernetes Network Engineer
+    code: CKNE
+    provider: CNCF / Linux Foundation
+    domain: Core Infrastructure and CNI
+    weight: 15
+    competencies:
+    - Installing and Configuring CNI Plugins
+    - Managing IPAM and Pod CIDR Allocation
+    - Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues
+    - Troubleshooting Pod Connectivity (DNS, pod-to-pod)
+    - Configuring Multi-interface Pods
+modules:
+- id: module-intro
+  title: Introduction
+  description: Planned introduction and authoring status.
+  content:
+  - type: reading
+    title: Introduction
+    path: sections/intro/README.md
+  - type: reading
+    title: Welcome To The Course
+    path: sections/intro/course-01-welcome.md
+  - type: reading
+    title: Get Your Machine Ready
+    path: sections/intro/course-02-get-your-machine-ready.md
+  - type: reading
+    title: How This Course Is Made
+    path: sections/intro/course-03-how-this-course-is-made.md
+- id: module-010
+  title: Installing and Configuring CNI Plugins
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-010/README.md
+  - type: reading
+    title: Installing and Configuring CNI Plugins
+    path: sections/section-010/module-01/course.md
+- id: module-020
+  title: Managing IPAM and Pod CIDR Allocation
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-020/README.md
+  - type: reading
+    title: Managing IPAM and Pod CIDR Allocation
+    path: sections/section-020/module-01/course.md
+- id: module-030
+  title: Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-030/README.md
+  - type: reading
+    title: Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues
+    path: sections/section-030/module-01/course.md
+- id: module-040
+  title: Troubleshooting Pod Connectivity (DNS, pod-to-pod)
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-040/README.md
+  - type: reading
+    title: Troubleshooting Pod Connectivity (DNS, pod-to-pod)
+    path: sections/section-040/module-01/course.md
+- id: module-050
+  title: Configuring Multi-interface Pods
+  description: Planned coverage of this curriculum objective.
+  content:
+  - type: reading
+    title: Section Overview
+    path: sections/section-050/README.md
+  - type: reading
+    title: Configuring Multi-interface Pods
+    path: sections/section-050/module-01/course.md
