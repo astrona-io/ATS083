@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Attach A Second Interface To A Pod (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-050-01-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel and Multus and the example workloads. No NetworkAttachmentDefinition and no `tender` pod exist."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: side-net-defined
+    description: "The NetworkAttachmentDefinition side-net in starfleet describes a bridge network with the range 192.168.50.0/24"
+    type: file
+    source: validation/validate-side-net-defined.sh
+    hint: "Create a NetworkAttachmentDefinition named side-net in starfleet. Put the CNI configuration, with type bridge and a host-local subnet, in spec.config."
+  - name: tender-running
+    description: "The pod tender in starfleet runs and names side-net in its networks annotation"
+    type: file
+    source: validation/validate-tender-running.sh
+    hint: "Add the annotation k8s.v1.cni.cncf.io/networks: side-net to the pod and wait until it is Running."
+  - name: tender-second-interface
+    description: "The pod tender has net1 inside 192.168.50.0/24 and keeps eth0 in the pod network"
+    type: file
+    source: validation/validate-tender-second-interface.sh
+    hint: "Run ip -4 addr inside the pod. The first extra interface is called net1."
+teardown:
+  keepCluster: false

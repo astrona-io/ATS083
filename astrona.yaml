@@ -1,8 +1,8 @@
-# Preparation scaffold. Technical pages stay draft until authoring and review.
+# Reading, playgrounds, labs and quizzes. All labs and playgrounds are untested: static checks only.
 training:
   id: ATS083
   title: 'CKNE: Core Infrastructure and CNI'
-  description: Preparation scaffold for Core Infrastructure and CNI. Lessons and environments are planned.
+  description: 'Reading material, labs, playgrounds and knowledge checks for CKNE: Core Infrastructure and CNI. Technical content is draft, and the labs have not been run yet.'
   certification:
     name: Certified Kubernetes Network Engineer
     code: CKNE
@@ -18,7 +18,7 @@ training:
 modules:
 - id: module-intro
   title: Introduction
-  description: Planned introduction and authoring status.
+  description: Audience, reading method and review process.
   content:
   - type: reading
     title: Introduction
@@ -33,52 +33,589 @@ modules:
     title: How This Course Is Made
     path: sections/intro/course-03-how-this-course-is-made.md
 - id: module-010
-  title: Installing and Configuring CNI Plugins
-  description: Planned coverage of this curriculum objective.
+  title: "Installing and Configuring CNI Plugins"
+  description: "Explains how the container runtime finds and calls a CNI plugin, what the CNI operations return, why nodes need a network plugin and how to install and verify flannel."
+  status: alpha
   content:
   - type: reading
-    title: Section Overview
+    title: "Installing and Configuring CNI Plugins"
     path: sections/section-010/README.md
   - type: reading
-    title: Installing and Configuring CNI Plugins
+    title: "How The Runtime Finds And Calls A CNI Plugin"
     path: sections/section-010/module-01/course.md
+  - type: reading
+    title: "The CNI Configuration And Binary Directories"
+    path: sections/section-010/module-01/course-01-cni-configuration-and-binary-directories.md
+  - type: reading
+    title: "The CNI Operations And Their Result"
+    path: sections/section-010/module-01/course-02-cni-operations-and-result.md
+  - type: reading
+    title: "Record The CNI Configuration Of The Nodes - Task"
+    path: sections/section-010/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Record The CNI Configuration Of The Nodes"
+    path: sections/section-010/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 20m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Read the CNI configuration that flannel installs on every node"
+    - "Identify the plugin chain and the network name"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - cni
+    - flannel
+    - conflist
+    - cni-plugins
+    - kubectl
+    resources:
+    - name: "CNI specification"
+      url: https://www.cni.dev/docs/spec/
+    - name: "Network plugins"
+      url: https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/
+  - type: reading
+    title: "Summary"
+    path: sections/section-010/module-01/course-03-summary.md
+  - type: reading
+    title: "Installing A Network Plugin On A Cluster"
+    path: sections/section-010/module-02/course.md
+  - type: reading
+    title: "Why Nodes Stay NotReady Without A Plugin"
+    path: sections/section-010/module-02/course-01-why-nodes-stay-notready.md
+  - type: reading
+    title: "Installing And Verifying Flannel"
+    path: sections/section-010/module-02/course-02-installing-and-verifying-flannel.md
+  - type: reading
+    title: "Install Flannel On A Cluster Without A Network Plugin - Task"
+    path: sections/section-010/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Install Flannel On A Cluster Without A Network Plugin"
+    path: sections/section-010/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Install flannel from a pinned manifest"
+    - "Verify that the nodes become Ready and that pods receive addresses from the pod network"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - cni
+    - flannel
+    - daemonset
+    - node-readiness
+    - coredns
+    resources:
+    - name: "flannel"
+      url: https://github.com/flannel-io/flannel
+    - name: "Network plugins"
+      url: https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/
+  - type: reading
+    title: "Summary"
+    path: sections/section-010/module-02/course-03-summary.md
+  - type: reading
+    title: "CNI Installation Capstone - Task"
+    path: sections/section-010/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "CNI Installation Capstone"
+    path: sections/section-010/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 45m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Install flannel and prove that the nodes are Ready"
+    - "Record the CNI file name, the backend and the node count from the live cluster"
+    - "Run a pod that receives an address from the pod network"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - cni
+    - flannel
+    - conflist
+    - node-readiness
+    - podinfo
+    resources:
+    - name: "CNI specification"
+      url: https://www.cni.dev/docs/spec/
+    - name: "flannel"
+      url: https://github.com/flannel-io/flannel
+    - name: "Network plugins"
+      url: https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/
+  - type: quiz
+    title: "Knowledge Check: Installing and Configuring CNI Plugins"
+    path: sections/section-010/quiz.yaml
+    pass_score: 70
 - id: module-020
-  title: Managing IPAM and Pod CIDR Allocation
-  description: Planned coverage of this curriculum objective.
+  title: "Managing IPAM and Pod CIDR Allocation"
+  description: "Explains how the cluster hands a pod address range to each node and how the CNI plugin allocates single pod addresses from that range."
+  status: alpha
   content:
   - type: reading
-    title: Section Overview
+    title: "Managing IPAM and Pod CIDR Allocation"
     path: sections/section-020/README.md
   - type: reading
-    title: Managing IPAM and Pod CIDR Allocation
+    title: "Pod CIDR Allocation To Nodes"
     path: sections/section-020/module-01/course.md
+  - type: reading
+    title: "The Cluster CIDR And Node Ranges"
+    path: sections/section-020/module-01/course-01-the-cluster-cidr-and-node-ranges.md
+  - type: reading
+    title: "Reading Ranges In Kubernetes Objects"
+    path: sections/section-020/module-01/course-02-reading-ranges-in-kubernetes-objects.md
+  - type: reading
+    title: "Record The Pod Ranges Of The Nodes - Task"
+    path: sections/section-020/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Record The Pod Ranges Of The Nodes"
+    path: sections/section-020/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 20m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Read the cluster pod network from the flannel configuration"
+    - "Read the pod CIDR that Kubernetes assigned to a node"
+    - "Find the node that runs a pod"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - pod-cidr
+    - ipam
+    - flannel
+    - nodes
+    resources:
+    - name: "Kubernetes: Cluster Networking"
+      url: https://kubernetes.io/docs/concepts/cluster-administration/networking/
+    - name: "kube-controller-manager reference"
+      url: https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/
+  - type: reading
+    title: "Summary"
+    path: sections/section-020/module-01/course-03-summary.md
+  - type: reading
+    title: "IPAM In The CNI Plugin"
+    path: sections/section-020/module-02/course.md
+  - type: reading
+    title: "The host-local IPAM Plugin"
+    path: sections/section-020/module-02/course-01-the-host-local-ipam-plugin.md
+  - type: reading
+    title: "Capacity, Exhaustion And Overlap"
+    path: sections/section-020/module-02/course-02-capacity-exhaustion-and-overlap.md
+  - type: reading
+    title: "Trace A Pod Address To Its Node Range - Task"
+    path: sections/section-020/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Trace A Pod Address To Its Node Range"
+    path: sections/section-020/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Match a pod address to the pod CIDR of its node"
+    - "Count the pods of a Deployment on each node range"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - pod-cidr
+    - ipam
+    - host-local
+    - pod-ip
+    resources:
+    - name: "CNI host-local plugin"
+      url: https://www.cni.dev/plugins/current/ipam/host-local/
+    - name: "Kubernetes: Cluster Networking"
+      url: https://kubernetes.io/docs/concepts/cluster-administration/networking/
+  - type: reading
+    title: "Summary"
+    path: sections/section-020/module-02/course-03-summary.md
+  - type: reading
+    title: "IPAM Capstone - Task"
+    path: sections/section-020/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "IPAM Capstone"
+    path: sections/section-020/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 45m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Record the pod CIDR of every node"
+    - "Verify that every pod address lies inside the range of its node"
+    - "Create a pod on a chosen node and check its address"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - pod-cidr
+    - ipam
+    - flannel
+    - scheduling
+    resources:
+    - name: "Kubernetes: Cluster Networking"
+      url: https://kubernetes.io/docs/concepts/cluster-administration/networking/
+    - name: "Kubernetes: Assigning Pods to Nodes"
+      url: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
+  - type: quiz
+    title: "Knowledge Check: Managing IPAM and Pod CIDR Allocation"
+    path: sections/section-020/quiz.yaml
+    pass_score: 70
 - id: module-030
-  title: Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues
-  description: Planned coverage of this curriculum objective.
+  title: "Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues"
+  description: "Shows how to read the network state of a pod and of a node with ip, iptables and tcpdump, and how to follow one packet from a pod through the Service rules to its destination."
+  status: alpha
   content:
   - type: reading
-    title: Section Overview
+    title: "Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues"
     path: sections/section-030/README.md
   - type: reading
-    title: Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues
+    title: "Inspecting Pod Network Interfaces With ip"
     path: sections/section-030/module-01/course.md
+  - type: reading
+    title: "The Network Namespace Of A Pod"
+    path: sections/section-030/module-01/course-01-the-network-namespace-of-a-pod.md
+  - type: reading
+    title: "Reading Links, Routes And Neighbours"
+    path: sections/section-030/module-01/course-02-reading-links-routes-and-neighbours.md
+  - type: reading
+    title: "Record The Network Settings Of A Pod - Task"
+    path: sections/section-030/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Record The Network Settings Of A Pod"
+    path: sections/section-030/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 20m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Read the address, MAC address and MTU of the interface of a pod"
+    - "Read the default gateway of a pod from its routing table"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - ip
+    - network-namespace
+    - mtu
+    - routes
+    resources:
+    - name: "ip(8) manual page"
+      url: https://man7.org/linux/man-pages/man8/ip.8.html
+    - name: "network_namespaces(7) manual page"
+      url: https://man7.org/linux/man-pages/man7/network_namespaces.7.html
+  - type: reading
+    title: "Summary"
+    path: sections/section-030/module-01/course-03-summary.md
+  - type: reading
+    title: "Packet-level Tools: iptables And tcpdump"
+    path: sections/section-030/module-02/course.md
+  - type: reading
+    title: "iptables And The Service Rules"
+    path: sections/section-030/module-02/course-01-iptables-and-the-service-rules.md
+  - type: reading
+    title: "Capturing Packets With tcpdump"
+    path: sections/section-030/module-02/course-02-capturing-packets-with-tcpdump.md
+  - type: reading
+    title: "Record The Service Path Of probe - Task"
+    path: sections/section-030/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Record The Service Path Of probe"
+    path: sections/section-030/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Read the virtual address and target port of a Service"
+    - "Find the pod address that the Service rules send traffic to"
+    - "Find the node that runs the backend pod and the kube-proxy pods"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - iptables
+    - kube-proxy
+    - services
+    - endpoints
+    resources:
+    - name: "Kubernetes: Virtual IPs and Service Proxies"
+      url: https://kubernetes.io/docs/reference/networking/virtual-ips/
+    - name: "iptables(8) manual page"
+      url: https://man7.org/linux/man-pages/man8/iptables.8.html
+  - type: reading
+    title: "Summary"
+    path: sections/section-030/module-02/course-03-summary.md
+  - type: reading
+    title: "Packet-level Capstone - Task"
+    path: sections/section-030/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Packet-level Capstone"
+    path: sections/section-030/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 45m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Read interface settings of a pod and the Service data of probe"
+    - "Run a pod in the network namespace of its node"
+    - "Reach a Service from the node network namespace"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - ip
+    - iptables
+    - host-network
+    - services
+    resources:
+    - name: "Kubernetes: Virtual IPs and Service Proxies"
+      url: https://kubernetes.io/docs/reference/networking/virtual-ips/
+    - name: "ip(8) manual page"
+      url: https://man7.org/linux/man-pages/man8/ip.8.html
+  - type: quiz
+    title: "Knowledge Check: Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues"
+    path: sections/section-030/quiz.yaml
+    pass_score: 70
 - id: module-040
-  title: Troubleshooting Pod Connectivity (DNS, pod-to-pod)
-  description: Planned coverage of this curriculum objective.
+  title: "Troubleshooting Pod Connectivity (DNS, pod-to-pod)"
+  description: "Teaches a fixed order of checks for broken name resolution and broken pod-to-pod and Service traffic, and how to read the live objects that explain each failure."
+  status: alpha
   content:
   - type: reading
-    title: Section Overview
+    title: "Troubleshooting Pod Connectivity (DNS, pod-to-pod)"
     path: sections/section-040/README.md
   - type: reading
-    title: Troubleshooting Pod Connectivity (DNS, pod-to-pod)
+    title: "Troubleshooting Cluster DNS"
     path: sections/section-040/module-01/course.md
+  - type: reading
+    title: "How Pods Resolve Names"
+    path: sections/section-040/module-01/course-01-how-pods-resolve-names.md
+  - type: reading
+    title: "Diagnosing DNS Failures"
+    path: sections/section-040/module-01/course-02-diagnosing-dns-failures.md
+  - type: reading
+    title: "Restore Cluster DNS - Task"
+    path: sections/section-040/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Restore Cluster DNS"
+    path: sections/section-040/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: core-infrastructure-and-cni
+    task_kind: troubleshooting
+    learning_goals:
+    - "Find a DNS fault by testing resolution from a pod"
+    - "Read and correct the CoreDNS Corefile"
+    - "Restart CoreDNS and confirm that Service names resolve again"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - dns
+    - coredns
+    - troubleshooting
+    resources:
+    - name: "Kubernetes: Debugging DNS Resolution"
+      url: https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/
+    - name: "CoreDNS kubernetes plugin"
+      url: https://coredns.io/plugins/kubernetes/
+  - type: reading
+    title: "Summary"
+    path: sections/section-040/module-01/course-03-summary.md
+  - type: reading
+    title: "Troubleshooting Pod-to-Pod Connectivity"
+    path: sections/section-040/module-02/course.md
+  - type: reading
+    title: "How Service Traffic Reaches A Pod"
+    path: sections/section-040/module-02/course-01-how-service-traffic-reaches-a-pod.md
+  - type: reading
+    title: "Diagnosing Connection Failures"
+    path: sections/section-040/module-02/course-02-diagnosing-connection-failures.md
+  - type: reading
+    title: "Repair The probe Service - Task"
+    path: sections/section-040/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Repair The probe Service"
+    path: sections/section-040/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: core-infrastructure-and-cni
+    task_kind: troubleshooting
+    learning_goals:
+    - "Find why a Service has no endpoints"
+    - "Compare the selector and target port of a Service with the pods"
+    - "Confirm the repair from a pod in the same namespace and in another namespace"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - services
+    - endpoints
+    - troubleshooting
+    - pod-to-pod
+    resources:
+    - name: "Kubernetes: Debug Services"
+      url: https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/
+    - name: "Kubernetes: Service"
+      url: https://kubernetes.io/docs/concepts/services-networking/service/
+  - type: reading
+    title: "Summary"
+    path: sections/section-040/module-02/course-03-summary.md
+  - type: reading
+    title: "Connectivity Capstone - Task"
+    path: sections/section-040/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Connectivity Capstone"
+    path: sections/section-040/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 45m
+    topic: core-infrastructure-and-cni
+    task_kind: troubleshooting
+    learning_goals:
+    - "Find several independent faults with one ordered set of checks"
+    - "Repair CoreDNS, a Service selector and a pod DNS policy"
+    - "Confirm the repair from pods in two namespaces"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - dns
+    - coredns
+    - services
+    - troubleshooting
+    resources:
+    - name: "Kubernetes: Debugging DNS Resolution"
+      url: https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/
+    - name: "Kubernetes: Debug Services"
+      url: https://kubernetes.io/docs/tasks/debug/debug-application/debug-service/
+    - name: "Kubernetes: DNS for Services and Pods"
+      url: https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
+  - type: quiz
+    title: "Knowledge Check: Troubleshooting Pod Connectivity (DNS, pod-to-pod)"
+    path: sections/section-040/quiz.yaml
+    pass_score: 70
 - id: module-050
-  title: Configuring Multi-interface Pods
-  description: Planned coverage of this curriculum objective.
+  title: "Configuring Multi-interface Pods"
+  description: "Explains how Multus gives a pod more than one network interface, how a NetworkAttachmentDefinition describes the extra network, and how to repair a pod whose attachment fails."
+  status: alpha
   content:
   - type: reading
-    title: Section Overview
+    title: "Configuring Multi-interface Pods"
     path: sections/section-050/README.md
   - type: reading
-    title: Configuring Multi-interface Pods
+    title: "Multus And Network Attachment Definitions"
     path: sections/section-050/module-01/course.md
+  - type: reading
+    title: "How Multus Adds Interfaces"
+    path: sections/section-050/module-01/course-01-how-multus-adds-interfaces.md
+  - type: reading
+    title: "Network Attachment Definitions And Annotations"
+    path: sections/section-050/module-01/course-02-network-attachment-definitions-and-annotations.md
+  - type: reading
+    title: "Attach A Second Interface To A Pod - Task"
+    path: sections/section-050/module-01/labs/lab-01/question.md
+  - type: lab
+    title: "Attach A Second Interface To A Pod"
+    path: sections/section-050/module-01/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 25m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Write a NetworkAttachmentDefinition for a bridge network"
+    - "Attach a pod to the network with the networks annotation"
+    - "Read the second interface inside the pod"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - multus
+    - network-attachment-definition
+    - secondary-interface
+    resources:
+    - name: "Multus quickstart"
+      url: https://github.com/k8snetworkplumbingwg/multus-cni/blob/v4.3.1/docs/quickstart.md
+    - name: "Multus how to use"
+      url: https://github.com/k8snetworkplumbingwg/multus-cni/blob/v4.3.1/docs/how-to-use.md
+    - name: "CNI bridge plugin"
+      url: https://www.cni.dev/plugins/current/main/bridge/
+  - type: reading
+    title: "Summary"
+    path: sections/section-050/module-01/course-03-summary.md
+  - type: reading
+    title: "Troubleshooting Secondary Interfaces"
+    path: sections/section-050/module-02/course.md
+  - type: reading
+    title: "Reading Attachment Failures"
+    path: sections/section-050/module-02/course-01-reading-attachment-failures.md
+  - type: reading
+    title: "Repairing Attachments And Checking Results"
+    path: sections/section-050/module-02/course-02-repairing-attachments-and-checking-results.md
+  - type: reading
+    title: "Repair A Pod With A Failed Attachment - Task"
+    path: sections/section-050/module-02/labs/lab-01/question.md
+  - type: lab
+    title: "Repair A Pod With A Failed Attachment"
+    path: sections/section-050/module-02/labs/lab-01
+    difficulty: intermediate
+    estimated_duration: 30m
+    topic: core-infrastructure-and-cni
+    task_kind: troubleshoot
+    learning_goals:
+    - "Read the events of a pod that cannot create its sandbox"
+    - "Find an attachment definition that is missing in the namespace of the pod"
+    - "Find a wrong plugin type in an attachment definition"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - multus
+    - troubleshooting
+    - network-attachment-definition
+    resources:
+    - name: "Multus how to use"
+      url: https://github.com/k8snetworkplumbingwg/multus-cni/blob/v4.3.1/docs/how-to-use.md
+    - name: "CNI bridge plugin"
+      url: https://www.cni.dev/plugins/current/main/bridge/
+  - type: reading
+    title: "Summary"
+    path: sections/section-050/module-02/course-03-summary.md
+  - type: reading
+    title: "Multi-interface Capstone - Task"
+    path: sections/section-050/capstone/labs/lab-01/question.md
+  - type: lab
+    title: "Multi-interface Capstone"
+    path: sections/section-050/capstone/labs/lab-01
+    difficulty: advanced
+    estimated_duration: 45m
+    topic: core-infrastructure-and-cni
+    task_kind: build
+    learning_goals:
+    - "Repair a pod whose networks annotation names a missing definition"
+    - "Create a bridge attachment definition in another namespace"
+    - "Attach a pod with a chosen interface name"
+    tags:
+    - ckne
+    - core-infrastructure-and-cni
+    - kubernetes
+    - multus
+    - network-attachment-definition
+    - troubleshooting
+    resources:
+    - name: "Multus how to use"
+      url: https://github.com/k8snetworkplumbingwg/multus-cni/blob/v4.3.1/docs/how-to-use.md
+    - name: "CNI bridge plugin"
+      url: https://www.cni.dev/plugins/current/main/bridge/
+  - type: quiz
+    title: "Knowledge Check: Configuring Multi-interface Pods"
+    path: sections/section-050/quiz.yaml
+    pass_score: 70
+  - type: quiz
+    title: "Final Knowledge Check: Core Infrastructure and CNI"
+    path: sections/final-domain-quiz.yaml
+    pass_score: 70

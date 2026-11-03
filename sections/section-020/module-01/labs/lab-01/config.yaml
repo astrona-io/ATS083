@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Record The Pod Ranges Of The Nodes (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-020-01-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel, plus the `probe` Service, the `shuttle` pod and the `drifter` pod. No evidence ConfigMap exists."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: cluster-cidr-recorded
+    description: "The report holds the live cluster pod network"
+    type: file
+    source: validation/validate-cluster-cidr-recorded.sh
+    hint: "The Network field is in net-conf.json of the ConfigMap kube-flannel-cfg in kube-flannel."
+  - name: node-count-recorded
+    description: "The report holds the live number of nodes"
+    type: file
+    source: validation/validate-node-count-recorded.sh
+    hint: "Count the lines of kubectl get nodes without the header."
+  - name: worker-pod-cidr-recorded
+    description: "The report holds the live pod CIDR of the worker node"
+    type: file
+    source: validation/validate-worker-pod-cidr-recorded.sh
+    hint: "Read spec.podCIDR of the node that has no control-plane role label."
+  - name: shuttle-node-recorded
+    description: "The report holds the live node of the shuttle pod"
+    type: file
+    source: validation/validate-shuttle-node-recorded.sh
+    hint: "Read spec.nodeName of the pod shuttle in starfleet."
+teardown:
+  keepCluster: false

@@ -1,0 +1,377 @@
+# Final domain knowledge check across all five sections.
+schema_version: 1
+kind: question_bank
+id: ats083-final
+course_id: ATS083
+exam_code: CKNE
+status: draft
+provenance: Original practice material written for this course; not official exam
+  questions.
+scope:
+  type: domain
+  id: core-infrastructure-and-cni
+  title: Core Infrastructure and CNI
+questions:
+- id: ats083-final-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Name the directory of CNI configuration files
+  source_readings:
+  - sections/section-010/module-01/course-01-cni-configuration-and-binary-directories.md
+  prompt: Where does the container runtime look for CNI configuration files by default?
+  options:
+  - id: a
+    text: "/etc/cni/net.d on the node"
+    explanation: Correct. The runtime reads configuration files from /etc/cni/net.d
+      and the plugin binaries from /opt/cni/bin.
+  - id: b
+    text: "/opt/cni/bin on the node"
+    explanation: Not correct. The runtime reads configuration files from /etc/cni/net.d
+      and the plugin binaries from /opt/cni/bin.
+  - id: c
+    text: "/var/lib/cni on the node"
+    explanation: Not correct. The runtime reads configuration files from /etc/cni/net.d
+      and the plugin binaries from /opt/cni/bin.
+  - id: d
+    text: "/etc/kubernetes/manifests on the node"
+    explanation: Not correct. The runtime reads configuration files from /etc/cni/net.d
+      and the plugin binaries from /opt/cni/bin.
+  correct_option: a
+  explanation: The runtime reads configuration files from /etc/cni/net.d and the plugin
+    binaries from /opt/cni/bin.
+- id: ats083-final-q02
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Name the CNI operation that creates a pod interface
+  source_readings:
+  - sections/section-010/module-01/course-02-cni-operations-and-result.md
+  prompt: Which CNI operation does the runtime call when it sets up the network of
+    a new pod sandbox?
+  options:
+  - id: a
+    text: VERSION
+    explanation: Not correct. ADD attaches the pod to the network; DEL removes it.
+  - id: b
+    text: ADD
+    explanation: Correct. ADD attaches the pod to the network; DEL removes it.
+  - id: c
+    text: CHECK
+    explanation: Not correct. ADD attaches the pod to the network; DEL removes it.
+  - id: d
+    text: DEL
+    explanation: Not correct. ADD attaches the pod to the network; DEL removes it.
+  correct_option: b
+  explanation: ADD attaches the pod to the network; DEL removes it.
+- id: ats083-final-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Diagnose a NotReady node without a network plugin
+  source_readings:
+  - sections/section-010/module-02/course-01-why-nodes-stay-notready.md
+  prompt: A new cluster has no network plugin and its nodes stay NotReady. What is
+    the cause?
+  options:
+  - id: a
+    text: The scheduler is not running.
+    explanation: Not correct. Without a CNI configuration the node reports that the
+      network plugin is not ready.
+  - id: b
+    text: The kube-proxy image is missing.
+    explanation: Not correct. Without a CNI configuration the node reports that the
+      network plugin is not ready.
+  - id: c
+    text: The runtime finds no CNI configuration, so the network is not ready.
+    explanation: Correct. Without a CNI configuration the node reports that the network
+      plugin is not ready.
+  - id: d
+    text: The API server certificate expired.
+    explanation: Not correct. Without a CNI configuration the node reports that the
+      network plugin is not ready.
+  correct_option: c
+  explanation: Without a CNI configuration the node reports that the network plugin
+    is not ready.
+- id: ats083-final-q04
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Name the owner of spec.podCIDR
+  source_readings:
+  - sections/section-020/module-01/course-01-the-cluster-cidr-and-node-ranges.md
+  prompt: Which component writes spec.podCIDR into a Node object?
+  options:
+  - id: a
+    text: The kubelet
+    explanation: Not correct. The controller cuts one range per node from the cluster
+      CIDR.
+  - id: b
+    text: The host-local plugin
+    explanation: Not correct. The controller cuts one range per node from the cluster
+      CIDR.
+  - id: c
+    text: kube-proxy
+    explanation: Not correct. The controller cuts one range per node from the cluster
+      CIDR.
+  - id: d
+    text: The node IPAM controller in the kube-controller-manager
+    explanation: Correct. The controller cuts one range per node from the cluster
+      CIDR.
+  correct_option: d
+  explanation: The controller cuts one range per node from the cluster CIDR.
+- id: ats083-final-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Find where host-local keeps its state
+  source_readings:
+  - sections/section-020/module-02/course-01-the-host-local-ipam-plugin.md
+  prompt: Where does host-local record the addresses it has handed out?
+  options:
+  - id: a
+    text: As files in a directory on the node, named by address
+    explanation: Correct. State is local to the node, one file per address.
+  - id: b
+    text: In etcd
+    explanation: Not correct. State is local to the node, one file per address.
+  - id: c
+    text: In the Node object
+    explanation: Not correct. State is local to the node, one file per address.
+  - id: d
+    text: In a ConfigMap in kube-system
+    explanation: Not correct. State is local to the node, one file per address.
+  correct_option: a
+  explanation: State is local to the node, one file per address.
+- id: ats083-final-q06
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Recognise an exhausted node range
+  source_readings:
+  - sections/section-020/module-02/course-02-capacity-exhaustion-and-overlap.md
+  prompt: Pods fail with FailedCreatePodSandBox on one node only, with an error about
+    no addresses in the range set. What is the cause?
+  options:
+  - id: a
+    text: The Service range overlaps the node network.
+    explanation: Not correct. Each node has its own range, so only that node fails.
+  - id: b
+    text: The range of that node is full.
+    explanation: Correct. Each node has its own range, so only that node fails.
+  - id: c
+    text: The cluster CIDR is full on every node.
+    explanation: Not correct. Each node has its own range, so only that node fails.
+  - id: d
+    text: CoreDNS is down.
+    explanation: Not correct. Each node has its own range, so only that node fails.
+  correct_option: b
+  explanation: Each node has its own range, so only that node fails.
+- id: ats083-final-q07
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain a pod network namespace
+  source_readings:
+  - sections/section-030/module-01/course-01-the-network-namespace-of-a-pod.md
+  prompt: What does a pod network namespace contain?
+  options:
+  - id: a
+    text: The iptables rules of all nodes
+    explanation: Not correct. Each pod has an isolated network stack.
+  - id: b
+    text: The routes of the control plane only
+    explanation: Not correct. Each pod has an isolated network stack.
+  - id: c
+    text: Its own interfaces, routes and neighbour table
+    explanation: Correct. Each pod has an isolated network stack.
+  - id: d
+    text: Only the interfaces of the node
+    explanation: Not correct. Each pod has an isolated network stack.
+  correct_option: c
+  explanation: Each pod has an isolated network stack.
+- id: ats083-final-q08
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Pick the right ip command for routes
+  source_readings:
+  - sections/section-030/module-01/course-02-reading-links-routes-and-neighbours.md
+  prompt: Which command shows the routing table inside a pod?
+  options:
+  - id: a
+    text: ip link
+    explanation: Not correct. ip route lists routes; ip link lists interfaces; ip
+      neigh lists neighbours.
+  - id: b
+    text: ip neigh
+    explanation: Not correct. ip route lists routes; ip link lists interfaces; ip
+      neigh lists neighbours.
+  - id: c
+    text: ip addr
+    explanation: Not correct. ip route lists routes; ip link lists interfaces; ip
+      neigh lists neighbours.
+  - id: d
+    text: ip route
+    explanation: Correct. ip route lists routes; ip link lists interfaces; ip neigh
+      lists neighbours.
+  correct_option: d
+  explanation: ip route lists routes; ip link lists interfaces; ip neigh lists neighbours.
+- id: ats083-final-q09
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Choose a capture filter
+  source_readings:
+  - sections/section-030/module-02/course-02-capturing-packets-with-tcpdump.md
+  prompt: How do you capture only traffic to port 9898 on interface eth0?
+  options:
+  - id: a
+    text: tcpdump -i eth0 port 9898
+    explanation: Correct. A bare 'port N' expression is a capture filter.
+  - id: b
+    text: tcpdump -i eth0 -p 9898
+    explanation: Not correct. A bare 'port N' expression is a capture filter.
+  - id: c
+    text: tcpdump eth0 > 9898
+    explanation: Not correct. A bare 'port N' expression is a capture filter.
+  - id: d
+    text: tcpdump -w port eth0
+    explanation: Not correct. A bare 'port N' expression is a capture filter.
+  correct_option: a
+  explanation: A bare 'port N' expression is a capture filter.
+- id: ats083-final-q10
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Name the file that sets the resolver of a pod
+  source_readings:
+  - sections/section-040/module-01/course-01-how-pods-resolve-names.md
+  prompt: Which file in a pod lists the DNS server and the search domains?
+  options:
+  - id: a
+    text: "/etc/cni/net.d"
+    explanation: Not correct. The kubelet writes the nameserver and search domains
+      to resolv.conf.
+  - id: b
+    text: "/etc/resolv.conf"
+    explanation: Correct. The kubelet writes the nameserver and search domains to
+      resolv.conf.
+  - id: c
+    text: "/etc/hosts"
+    explanation: Not correct. The kubelet writes the nameserver and search domains
+      to resolv.conf.
+  - id: d
+    text: "/etc/nsswitch.conf"
+    explanation: Not correct. The kubelet writes the nameserver and search domains
+      to resolv.conf.
+  correct_option: b
+  explanation: The kubelet writes the nameserver and search domains to resolv.conf.
+- id: ats083-final-q11
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Name the object that holds the Corefile
+  source_readings:
+  - sections/section-040/module-01/course-02-diagnosing-dns-failures.md
+  prompt: Which object holds the CoreDNS configuration?
+  options:
+  - id: a
+    text: The DaemonSet kube-dns
+    explanation: Not correct. The Corefile is the key Corefile in the ConfigMap.
+  - id: b
+    text: The Node object
+    explanation: Not correct. The Corefile is the key Corefile in the ConfigMap.
+  - id: c
+    text: The ConfigMap coredns in kube-system
+    explanation: Correct. The Corefile is the key Corefile in the ConfigMap.
+  - id: d
+    text: The Secret coredns in default
+    explanation: Not correct. The Corefile is the key Corefile in the ConfigMap.
+  correct_option: c
+  explanation: The Corefile is the key Corefile in the ConfigMap.
+- id: ats083-final-q12
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Find why a Service has no endpoints
+  source_readings:
+  - sections/section-040/module-02/course-02-diagnosing-connection-failures.md
+  prompt: A Service has no endpoints although its pods run. What is the most likely
+    cause?
+  options:
+  - id: a
+    text: The node has no pod CIDR.
+    explanation: Not correct. Endpoints are built from the pods that match the selector.
+  - id: b
+    text: The kubeconfig is wrong.
+    explanation: Not correct. Endpoints are built from the pods that match the selector.
+  - id: c
+    text: tcpdump is not installed.
+    explanation: Not correct. Endpoints are built from the pods that match the selector.
+  - id: d
+    text: The Service selector does not match the pod labels.
+    explanation: Correct. Endpoints are built from the pods that match the selector.
+  correct_option: d
+  explanation: Endpoints are built from the pods that match the selector.
+- id: ats083-final-q13
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain what Multus does
+  source_readings:
+  - sections/section-050/module-01/course-01-how-multus-adds-interfaces.md
+  prompt: What does Multus do?
+  options:
+  - id: a
+    text: It calls several CNI plugins so a pod gets more than one interface.
+    explanation: Correct. Multus delegates to the default plugin and to the plugins
+      named in annotations.
+  - id: b
+    text: It replaces the scheduler.
+    explanation: Not correct. Multus delegates to the default plugin and to the plugins
+      named in annotations.
+  - id: c
+    text: It encrypts pod traffic.
+    explanation: Not correct. Multus delegates to the default plugin and to the plugins
+      named in annotations.
+  - id: d
+    text: It allocates the node CIDR.
+    explanation: Not correct. Multus delegates to the default plugin and to the plugins
+      named in annotations.
+  correct_option: a
+  explanation: Multus delegates to the default plugin and to the plugins named in
+    annotations.
+- id: ats083-final-q14
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Use the attachment annotation
+  source_readings:
+  - sections/section-050/module-01/course-02-network-attachment-definitions-and-annotations.md
+  prompt: Which annotation requests a secondary network for a pod?
+  options:
+  - id: a
+    text: multus.io/attach
+    explanation: Not correct. The annotation lists NetworkAttachmentDefinition names.
+  - id: b
+    text: k8s.v1.cni.cncf.io/networks
+    explanation: Correct. The annotation lists NetworkAttachmentDefinition names.
+  - id: c
+    text: k8s.v1.cni.cncf.io/status
+    explanation: Not correct. The annotation lists NetworkAttachmentDefinition names.
+  - id: d
+    text: kubernetes.io/network
+    explanation: Not correct. The annotation lists NetworkAttachmentDefinition names.
+  correct_option: b
+  explanation: The annotation lists NetworkAttachmentDefinition names.
+- id: ats083-final-q15
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Find a missing definition
+  source_readings:
+  - sections/section-050/module-02/course-01-reading-attachment-failures.md
+  prompt: A pod stays in ContainerCreating and the event names a missing network attachment
+    definition. What is the fix?
+  options:
+  - id: a
+    text: Increase maxPods.
+    explanation: Not correct. The annotation must name an existing definition.
+  - id: b
+    text: Edit spec.podCIDR of the node.
+    explanation: Not correct. The annotation must name an existing definition.
+  - id: c
+    text: Create the NetworkAttachmentDefinition in the namespace that the annotation
+      names.
+    explanation: Correct. The annotation must name an existing definition.
+  - id: d
+    text: Restart the kubelet.
+    explanation: Not correct. The annotation must name an existing definition.
+  correct_option: c
+  explanation: The annotation must name an existing definition.

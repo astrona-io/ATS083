@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Packet-level Capstone (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-030-cap
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel and the example workloads. No report and no `netcheck` pod exist."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: drifter-settings-recorded
+    description: "The report holds the live address and MTU of eth0 in the drifter pod"
+    type: file
+    source: validation/validate-drifter-settings-recorded.sh
+    hint: "Run ip -4 addr show dev eth0 and cat /sys/class/net/eth0/mtu inside drifter in outpost."
+  - name: probe-service-data-recorded
+    description: "The report holds the live cluster IP and backend address of probe"
+    type: file
+    source: validation/validate-probe-service-data-recorded.sh
+    hint: "Read spec.clusterIP of the Service and the address in its EndpointSlice."
+  - name: netcheck-host-network
+    description: "The pod netcheck uses the host network and has the address of its node"
+    type: file
+    source: validation/validate-netcheck-host-network.sh
+    hint: "Set hostNetwork: true in the pod spec. The pod address then equals the InternalIP of its node."
+  - name: netcheck-reaches-probe
+    description: "The pod netcheck reaches the probe Service by its cluster IP"
+    type: file
+    source: validation/validate-netcheck-reaches-probe.sh
+    hint: "A host network pod does not use cluster DNS by default, so call the cluster IP and not the name."
+teardown:
+  keepCluster: false

@@ -1,0 +1,173 @@
+# Knowledge check for section 020. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats083-020
+course_id: ATS083
+exam_code: CKNE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-020
+  title: "Managing IPAM and Pod CIDR Allocation"
+questions:
+  - id: ats083-020-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name the component that cuts node ranges from the cluster CIDR"
+    source_readings:
+      - sections/section-020/module-01/course-01-the-cluster-cidr-and-node-ranges.md
+    prompt: "Which component writes a pod CIDR into the Node object of a new node?"
+    options:
+      - id: a
+        text: "The node IPAM controller in the kube-controller-manager."
+        explanation: "Correct. It runs when --allocate-node-cidrs is true and cuts the range from --cluster-cidr."
+      - id: b
+        text: "The kubelet on the new node."
+        explanation: "The kubelet reads the range but does not allocate it."
+      - id: c
+        text: "The host-local IPAM plugin."
+        explanation: "host-local hands out single pod addresses from a range that already exists."
+      - id: d
+        text: "The kube-proxy on the new node."
+        explanation: "kube-proxy handles Service traffic and does not allocate ranges."
+    correct_option: a
+    explanation: "The node IPAM controller allocates one range per node and writes it to spec.podCIDR."
+
+  - id: ats083-020-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Calculate the number of node ranges and addresses from the masks"
+    source_readings:
+      - sections/section-020/module-01/course-01-the-cluster-cidr-and-node-ranges.md
+    prompt: "The cluster CIDR is 10.244.0.0/16 and --node-cidr-mask-size is 24. How many node ranges can the cluster hold?"
+    options:
+      - id: a
+        text: "256"
+        explanation: "Correct. The difference of 8 bits gives 2 to the power 8 ranges."
+      - id: b
+        text: "254"
+        explanation: "254 is the number of usable host addresses in one /24, not the number of ranges."
+      - id: c
+        text: "65536"
+        explanation: "That is the number of addresses in the /16 block."
+      - id: d
+        text: "24"
+        explanation: "24 is the mask size and not a count."
+    correct_option: a
+    explanation: "A /16 split into /24 blocks gives 256 blocks."
+
+  - id: ats083-020-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain how flannel learns the range of its node"
+    source_readings:
+      - sections/section-020/module-01/course-02-reading-ranges-in-kubernetes-objects.md
+    prompt: "How does flannel learn which range belongs to its node when it runs with --kube-subnet-mgr?"
+    options:
+      - id: a
+        text: "It reads spec.podCIDR of its own Node object and writes the result to /run/flannel/subnet.env."
+        explanation: "Correct. The plugin on the node reads that file when a pod starts."
+      - id: b
+        text: "It asks the other flannel pods to agree on a range."
+        explanation: "No negotiation happens. The Node object is the source."
+      - id: c
+        text: "It picks a random /24 inside Network and registers it in etcd."
+        explanation: "flannel with the Kubernetes subnet manager does not choose ranges."
+      - id: d
+        text: "It reads the range from the kubelet configuration file."
+        explanation: "The kubelet configuration does not hold the pod range."
+    correct_option: a
+    explanation: "With --kube-subnet-mgr the Node object is the source of the range."
+
+  - id: ats083-020-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Tell which pods do not take an address from the node range"
+    source_readings:
+      - sections/section-020/module-01/course-02-reading-ranges-in-kubernetes-objects.md
+    prompt: "A pod shows the address of its node, not an address from the node range. What is the most likely reason?"
+    options:
+      - id: a
+        text: "The pod uses hostNetwork: true."
+        explanation: "Correct. Such pods share the network namespace of the node."
+      - id: b
+        text: "The range of the node is full."
+        explanation: "A full range keeps the pod in ContainerCreating and gives no address."
+      - id: c
+        text: "The pod runs in the namespace kube-system."
+        explanation: "The namespace does not decide the address source."
+      - id: d
+        text: "The pod uses a headless Service."
+        explanation: "A Service does not change the address of a pod."
+    correct_option: a
+    explanation: "hostNetwork pods use the node address."
+
+  - id: ats083-020-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Calculate the capacity of a node range"
+    source_readings:
+      - sections/section-020/module-02/course-02-capacity-exhaustion-and-overlap.md
+    prompt: "A node has a /24 range, the bridge plugin uses the first address as gateway and host-local uses its defaults. How many pod addresses can it hand out?"
+    options:
+      - id: a
+        text: "253"
+        explanation: "Correct. 256 minus network, broadcast and gateway."
+      - id: b
+        text: "256"
+        explanation: "The network and broadcast addresses are not usable."
+      - id: c
+        text: "110"
+        explanation: "110 is the kubelet default for pods per node, not the range size."
+      - id: d
+        text: "24"
+        explanation: "24 is the mask size and not a count."
+    correct_option: a
+    explanation: "A /24 has 256 addresses; three are reserved."
+
+  - id: ats083-020-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Recognise the symptom of an exhausted range"
+    source_readings:
+      - sections/section-020/module-02/course-02-capacity-exhaustion-and-overlap.md
+    prompt: "New pods on one node stay in ContainerCreating with FailedCreatePodSandBox events, while new pods start on the other node. What is the most likely cause?"
+    options:
+      - id: a
+        text: "The address range of the first node has no free address."
+        explanation: "Correct. Each node has its own range, so only that node is affected."
+      - id: b
+        text: "The cluster CIDR is exhausted on all nodes."
+        explanation: "Then the second node would fail too."
+      - id: c
+        text: "The kube-proxy on the first node crashed."
+        explanation: "kube-proxy does not take part in the sandbox creation."
+      - id: d
+        text: "The Service network overlaps the pod network."
+        explanation: "Overlap causes misrouting and not a failure of the sandbox."
+    correct_option: a
+    explanation: "A full node range fails only the pods of that node."
+
+  - id: ats083-020-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Know how to change a pod range on a live cluster"
+    source_readings:
+      - sections/section-020/module-02/course-02-capacity-exhaustion-and-overlap.md
+    prompt: "You need a different pod range for a node on a live cluster. What is the supported approach?"
+    options:
+      - id: a
+        text: "Add new nodes with the new setting, drain the old nodes and remove them."
+        explanation: "Correct. A node keeps its spec.podCIDR for its whole life."
+      - id: b
+        text: "Edit spec.podCIDR of the Node object with kubectl edit."
+        explanation: "The field is immutable once set."
+      - id: c
+        text: "Edit /run/flannel/subnet.env on the node."
+        explanation: "That file is generated from the Node object, and a manual edit makes the node disagree with the cluster."
+      - id: d
+        text: "Restart the kubelet."
+        explanation: "A restart does not change the range."
+    correct_option: a
+    explanation: "Replace the nodes to change a range."

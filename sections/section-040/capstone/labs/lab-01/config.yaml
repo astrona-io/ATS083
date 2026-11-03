@@ -1,0 +1,59 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Connectivity Capstone (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-040-cap
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel. The setup breaks three things: the CoreDNS zone, the selector of the Service `probe`, and the DNS settings of the pod `shuttle`."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: coredns-zone-fixed
+    description: "The Corefile serves the zone cluster.local and CoreDNS is ready"
+    type: file
+    source: validation/validate-coredns-zone-fixed.sh
+    hint: "Read the ConfigMap coredns in kube-system and restart the Deployment after a change."
+  - name: probe-has-endpoints
+    description: "The Service probe selects the probe pods and has endpoints"
+    type: file
+    source: validation/validate-probe-has-endpoints.sh
+    hint: "Compare spec.selector of the Service with the labels of the pods."
+  - name: shuttle-uses-cluster-dns
+    description: "The pod shuttle runs with the default cluster DNS policy"
+    type: file
+    source: validation/validate-shuttle-uses-cluster-dns.sh
+    hint: "A pod cannot change dnsPolicy while it runs. Delete it and create it again without dnsPolicy None."
+  - name: shuttle-reaches-probe
+    description: "The pod shuttle reaches probe by its short name"
+    type: file
+    source: validation/validate-shuttle-reaches-probe.sh
+    hint: "Fix the three faults, then request http://probe:9898/ from shuttle."
+  - name: drifter-reaches-probe
+    description: "The pod drifter reaches probe by its cross-namespace name"
+    type: file
+    source: validation/validate-drifter-reaches-probe.sh
+    hint: "Use the name probe.starfleet.svc.cluster.local from drifter."
+teardown:
+  keepCluster: false

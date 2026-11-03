@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Record The Service Path Of probe (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-030-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel, plus the `probe` Service, the `shuttle` pod and the `drifter` pod. No evidence ConfigMap exists."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: service-ip-recorded
+    description: "The report holds the live cluster IP of the probe Service"
+    type: file
+    source: validation/validate-service-ip-recorded.sh
+    hint: "Read spec.clusterIP of the Service probe in starfleet."
+  - name: endpoint-ip-recorded
+    description: "The report holds the live pod address behind the Service"
+    type: file
+    source: validation/validate-endpoint-ip-recorded.sh
+    hint: "Read the addresses of the EndpointSlice of probe, or status.podIP of the probe pod."
+  - name: probe-node-recorded
+    description: "The report holds the live node of the backend pod"
+    type: file
+    source: validation/validate-probe-node-recorded.sh
+    hint: "Read spec.nodeName of the pod with the label app=probe."
+  - name: kube-proxy-pods-recorded
+    description: "The report holds the live number of kube-proxy pods"
+    type: file
+    source: validation/validate-kube-proxy-pods-recorded.sh
+    hint: "Count the pods with the label k8s-app=kube-proxy in kube-system."
+teardown:
+  keepCluster: false

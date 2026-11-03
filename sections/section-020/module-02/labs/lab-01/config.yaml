@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Trace A Pod Address To Its Node Range (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-020-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel, the `shuttle` and `drifter` pods and a Deployment `crew` with four pods. No evidence ConfigMap exists."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: shuttle-ip-recorded
+    description: "The report holds the live address of the shuttle pod"
+    type: file
+    source: validation/validate-shuttle-ip-recorded.sh
+    hint: "Read status.podIP of the pod shuttle in starfleet."
+  - name: shuttle-node-cidr-recorded
+    description: "The report holds the live pod CIDR of the node that runs shuttle"
+    type: file
+    source: validation/validate-shuttle-node-cidr-recorded.sh
+    hint: "Find the node of shuttle first, then read spec.podCIDR of that node."
+  - name: crew-on-worker-recorded
+    description: "The report holds the live number of crew pods inside the worker range"
+    type: file
+    source: validation/validate-crew-on-worker-recorded.sh
+    hint: "Node ranges are /24, so compare the first three octets of each pod address with the worker range."
+  - name: crew-total-recorded
+    description: "The report holds the live number of crew pods"
+    type: file
+    source: validation/validate-crew-total-recorded.sh
+    hint: "Count the pods with the label app=crew."
+teardown:
+  keepCluster: false

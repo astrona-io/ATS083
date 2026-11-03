@@ -1,0 +1,204 @@
+# Knowledge check for section 050. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats083-050
+course_id: ATS083
+exam_code: CKNE
+status: draft
+provenance: Original practice material written for this course; not official exam
+  questions.
+scope:
+  type: section
+  id: section-050
+  title: Configuring Multi-interface Pods
+questions:
+- id: ats083-050-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain what Multus does
+  source_readings:
+  - sections/section-050/module-01/course-01-how-multus-adds-interfaces.md
+  prompt: What does Multus do when the container runtime calls it with ADD?
+  options:
+  - id: a
+    text: It calls the default network plugin first and then the plugins of the networks
+      named in the pod annotation.
+    explanation: Correct. It is a meta plugin that calls delegates in order.
+  - id: b
+    text: It creates every interface itself without calling other plugins.
+    explanation: Multus delegates to other CNI plugins.
+  - id: c
+    text: It replaces the cluster network plugin with a new one.
+    explanation: The cluster plugin stays the default network.
+  - id: d
+    text: It asks the kube-proxy to add interfaces to the pod.
+    explanation: kube-proxy is not part of the CNI call.
+  correct_option: a
+  explanation: Correct. It is a meta plugin that calls delegates in order.
+- id: ats083-050-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Name the interface names
+  source_readings:
+  - sections/section-050/module-01/course-01-how-multus-adds-interfaces.md
+  prompt: A pod has one additional network and no interface name is chosen. Which
+    interface names does the pod have?
+  options:
+  - id: a
+    text: Only net1, because the default network is replaced.
+    explanation: The default network is always called first.
+  - id: b
+    text: eth0 from the default network and net1 from the additional network.
+    explanation: Correct. Additional interfaces are numbered net1, net2 and so on.
+  - id: c
+    text: eth0 and eth1.
+    explanation: eth1 is not the default name used by Multus.
+  - id: d
+    text: net0 and net1.
+    explanation: The default network keeps the name eth0.
+  correct_option: b
+  explanation: Correct. Additional interfaces are numbered net1, net2 and so on.
+- id: ats083-050-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Know where the CNI configuration is
+  source_readings:
+  - sections/section-050/module-01/course-02-network-attachment-definitions-and-annotations.md
+  prompt: Where does the CNI configuration of an additional network live?
+  options:
+  - id: a
+    text: In a ConfigMap named after the pod.
+    explanation: Multus reads NetworkAttachmentDefinition objects.
+  - id: b
+    text: In the kubelet configuration file.
+    explanation: The kubelet does not hold attachment configuration.
+  - id: c
+    text: As a JSON string in spec.config of a NetworkAttachmentDefinition.
+    explanation: Correct. The object holds the CNI configuration as a string.
+  - id: d
+    text: In the pod specification under spec.network.
+    explanation: The pod specification has no such field.
+  correct_option: c
+  explanation: Correct. The object holds the CNI configuration as a string.
+- id: ats083-050-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Use the annotation syntax
+  source_readings:
+  - sections/section-050/module-01/course-02-network-attachment-definitions-and-annotations.md
+  prompt: Which annotation value attaches the definition side-net from the namespace
+    starfleet and names the interface storage0?
+  options:
+  - id: a
+    text: side-net.starfleet:storage0
+    explanation: This is not a valid form.
+  - id: b
+    text: storage0@starfleet/side-net
+    explanation: The interface name comes last.
+  - id: c
+    text: starfleet:side-net/storage0
+    explanation: This is not a valid form.
+  - id: d
+    text: starfleet/side-net@storage0
+    explanation: Correct. The namespace goes before the name and @ adds the interface
+      name.
+  correct_option: d
+  explanation: Correct. The namespace goes before the name and @ adds the interface
+    name.
+- id: ats083-050-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Know when the annotation is read
+  source_readings:
+  - sections/section-050/module-01/course-02-network-attachment-definitions-and-annotations.md
+  prompt: You add a networks annotation to a running pod. What happens?
+  options:
+  - id: a
+    text: Nothing changes in the pod, because the annotation is read when the sandbox
+      is created.
+    explanation: Correct. Create the pod again to attach the network.
+  - id: b
+    text: Multus adds the interface to the running pod within seconds.
+    explanation: Multus does not change running pods.
+  - id: c
+    text: The pod restarts and gets the interface.
+    explanation: Annotations do not restart a pod.
+  - id: d
+    text: The API server rejects the change.
+    explanation: The change is accepted but has no effect on the interfaces.
+  correct_option: a
+  explanation: Correct. Create the pod again to attach the network.
+- id: ats083-050-q06
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Find a missing definition
+  source_readings:
+  - sections/section-050/module-02/course-01-reading-attachment-failures.md
+  prompt: A pod in outpost names side-net in its annotation. The definition exists
+    only in starfleet, and the annotation has no namespace. What is the result?
+  options:
+  - id: a
+    text: The pod is deleted by the controller.
+    explanation: The pod only waits.
+  - id: b
+    text: The pod stays in ContainerCreating because the definition is looked up in
+      the namespace of the pod.
+    explanation: Correct. The lookup uses the namespace of the pod by default.
+  - id: c
+    text: The pod starts without the extra interface.
+    explanation: The call fails when the definition is missing.
+  - id: d
+    text: Multus searches all namespaces and finds it.
+    explanation: The lookup is limited to one namespace.
+  correct_option: b
+  explanation: Correct. The lookup uses the namespace of the pod by default.
+- id: ats083-050-q07
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Find a wrong plugin type
+  source_readings:
+  - sections/section-050/module-02/course-01-reading-attachment-failures.md
+  prompt: The definition of a pod has the type bridg instead of bridge. Which symptom
+    do you expect?
+  options:
+  - id: a
+    text: The pod runs and has only eth0 without any error.
+    explanation: A failed delegate fails the whole call.
+  - id: b
+    text: The node becomes NotReady.
+    explanation: An attachment fault does not change the node status.
+  - id: c
+    text: The pod stays in ContainerCreating with FailedCreatePodSandBox events, and
+      pods without the annotation are not affected.
+    explanation: Correct. The delegate cannot be run, so the call fails only for pods
+      that use it.
+  - id: d
+    text: Every new pod on every node fails, including pods without the annotation.
+    explanation: The default network is called first and is not affected.
+  correct_option: c
+  explanation: Correct. The delegate cannot be run, so the call fails only for pods
+    that use it.
+- id: ats083-050-q08
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Check a repair
+  source_readings:
+  - sections/section-050/module-02/course-02-repairing-attachments-and-checking-results.md
+  prompt: After you repair an attachment, which check proves that the pod got the
+    extra interface?
+  options:
+  - id: a
+    text: Read that the pod status is Running.
+    explanation: A pod without the annotation is Running too.
+  - id: b
+    text: Check that the definition exists.
+    explanation: The object can exist while the interface is missing.
+  - id: c
+    text: Restart the Multus DaemonSet.
+    explanation: This is not a check and can harm other pods.
+  - id: d
+    text: Run ip -4 addr in the pod and find the extra interface with an address from
+      the range of the definition.
+    explanation: Correct. A Running pod alone does not prove the attachment.
+  correct_option: d
+  explanation: Correct. A Running pod alone does not prove the attachment.

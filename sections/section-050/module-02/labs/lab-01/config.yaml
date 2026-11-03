@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Repair A Pod With A Failed Attachment (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-050-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel and Multus. The pods `ferry` in outpost and `cutter` in starfleet cannot start because their attachments are broken."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: ferry-running
+    description: "The pod ferry in outpost runs and has net1 inside 192.168.60.0/24"
+    type: file
+    source: validation/validate-ferry-running.sh
+    hint: "The attachment definition is looked up in the namespace of the pod unless the annotation names another namespace."
+  - name: dock-net-type-fixed
+    description: "The NetworkAttachmentDefinition dock-net uses the bridge plugin"
+    type: file
+    source: validation/validate-dock-net-type-fixed.sh
+    hint: "Read spec.config of dock-net and compare the type with the name of a real plugin."
+  - name: cutter-running
+    description: "The pod cutter in starfleet runs and has net1 inside 192.168.70.0/24"
+    type: file
+    source: validation/validate-cutter-running.sh
+    hint: "After the definition is fixed, the pod must start again. Delete it and create it again if it stays in ContainerCreating."
+  - name: default-network-intact
+    description: "The pod shuttle still reaches the probe Service over the default network"
+    type: file
+    source: validation/validate-default-network-intact.sh
+    hint: "Do not change the default network or the flannel configuration."
+teardown:
+  keepCluster: false

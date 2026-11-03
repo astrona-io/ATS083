@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Multi-interface Capstone (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-050-cap
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel and Multus. The pod `relay` in starfleet cannot start because its annotation names an attachment that does not exist."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: relay-repaired
+    description: "The pod relay in starfleet runs and has net1 inside 192.168.80.0/24"
+    type: file
+    source: validation/validate-relay-repaired.sh
+    hint: "Compare the name in the annotation with the name of the definition in starfleet. A pod annotation that is wrong at creation time is easiest to fix by creating the pod again."
+  - name: backend-net-defined
+    description: "The NetworkAttachmentDefinition backend-net in outpost describes a bridge network with the range 192.168.90.0/24"
+    type: file
+    source: validation/validate-backend-net-defined.sh
+    hint: "Create backend-net in the namespace outpost, with type bridge and a host-local subnet in spec.config."
+  - name: gateway-interface
+    description: "The pod gateway in outpost runs with the interface back0 inside 192.168.90.0/24 and keeps eth0"
+    type: file
+    source: validation/validate-gateway-interface.sh
+    hint: "Name the interface in the annotation with the form name@interface. Wait until the pod is Running."
+  - name: default-network-intact
+    description: "The pod shuttle still reaches the probe Service over the default network"
+    type: file
+    source: validation/validate-default-network-intact.sh
+    hint: "Do not change the default network or the flannel configuration."
+teardown:
+  keepCluster: false

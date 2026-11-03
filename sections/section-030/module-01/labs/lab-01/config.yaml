@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Record The Network Settings Of A Pod (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-030-01-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel, plus the `probe` Service, the `shuttle` pod and the `drifter` pod. No evidence ConfigMap exists."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: shuttle-ip-recorded
+    description: "The report holds the live address of the shuttle pod"
+    type: file
+    source: validation/validate-shuttle-ip-recorded.sh
+    hint: "Read the address of eth0 inside the pod or status.podIP of the pod."
+  - name: shuttle-mac-recorded
+    description: "The report holds the live MAC address of eth0 in the shuttle pod"
+    type: file
+    source: validation/validate-shuttle-mac-recorded.sh
+    hint: "Run ip link show eth0 inside the pod, or read /sys/class/net/eth0/address."
+  - name: shuttle-mtu-recorded
+    description: "The report holds the live MTU of eth0 in the shuttle pod"
+    type: file
+    source: validation/validate-shuttle-mtu-recorded.sh
+    hint: "Run ip link show eth0 inside the pod and read the value after mtu."
+  - name: shuttle-gateway-recorded
+    description: "The report holds the live default gateway of the shuttle pod"
+    type: file
+    source: validation/validate-shuttle-gateway-recorded.sh
+    hint: "Run ip route show default inside the pod and read the address after via."
+teardown:
+  keepCluster: false

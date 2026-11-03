@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Record The CNI Configuration Of The Nodes (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-010-01-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel installed as the network plugin, plus the `probe` Service, the `shuttle` pod and the `drifter` pod. No evidence ConfigMap exists."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: conf-file-recorded
+    description: "The report names the file that flannel writes into the CNI configuration directory"
+    type: file
+    source: validation/validate-conf-file-recorded.sh
+    hint: "Read the last argument of the init container install-cni in the DaemonSet kube-flannel-ds, and keep only the file name."
+  - name: network-name-recorded
+    description: "The report holds the network name from the flannel CNI configuration"
+    type: file
+    source: validation/validate-network-name-recorded.sh
+    hint: "Read the key cni-conf.json of the ConfigMap kube-flannel-cfg in kube-flannel and take its name field."
+  - name: plugin-types-recorded
+    description: "The report lists the plugin types of the chain in order"
+    type: file
+    source: validation/validate-plugin-types-recorded.sh
+    hint: "List the type field of each entry in plugins in cni-conf.json, in order, separated by commas."
+teardown:
+  keepCluster: false

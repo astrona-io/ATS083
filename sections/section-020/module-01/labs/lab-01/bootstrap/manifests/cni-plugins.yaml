@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cni-plugins
+  namespace: kube-system
+  labels:
+    app: cni-plugins
+spec:
+  selector:
+    matchLabels:
+      app: cni-plugins
+  template:
+    metadata:
+      labels:
+        app: cni-plugins
+    spec:
+      hostNetwork: true
+      tolerations:
+      - operator: Exists
+      initContainers:
+      - name: install-cni-plugins
+        image: curlimages/curl:8.22.0
+        securityContext:
+          runAsUser: 0
+        command:
+        - sh
+        - -c
+        - |
+          set -eu
+          case "$(uname -m)" in
+            x86_64) architecture=amd64 ;;
+            aarch64) architecture=arm64 ;;
+            *) echo "unsupported architecture" >&2; exit 1 ;;
+          esac
+          version=v1.9.1
+          base_url="https://github.com/containernetworking/plugins/releases/download/${version}"
+          archive="cni-plugins-linux-${architecture}-${version}.tgz"
+          cd /tmp
+          curl -fsSL --max-time 120 -o "$archive" "${base_url}/${archive}"
+          curl -fsSL --max-time 60 -o "${archive}.sha256" "${base_url}/${archive}.sha256"
+          sha256sum -c "${archive}.sha256"
+          tar -xzf "$archive" -C /host/opt/cni/bin
+        volumeMounts:
+        - name: cni-bin
+          mountPath: /host/opt/cni/bin
+      containers:
+      - name: pause
+        image: registry.k8s.io/pause:3.10
+      volumes:
+      - name: cni-bin
+        hostPath:
+          path: /opt/cni/bin

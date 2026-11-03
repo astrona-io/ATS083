@@ -1,0 +1,64 @@
+version: 1
+approval: Maintainer lifted the reading-only scope on 2026-11-03; playgrounds, graded labs, capstones and quizzes are in scope.
+course:
+  id: ATS083
+  certification:
+    name: Certified Kubernetes Network Engineer
+    code: CKNE
+    provider: CNCF / Linux Foundation
+    domain: Core Infrastructure and CNI
+    weight: 15
+    competencies:
+    - Installing and Configuring CNI Plugins
+    - Managing IPAM and Pod CIDR Allocation
+    - Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues
+    - Troubleshooting Pod Connectivity (DNS, pod-to-pod)
+    - Configuring Multi-interface Pods
+defaults:
+  playground: true
+  module_lab: true
+  capstone: true
+  section_quiz: true
+  final_quiz: true
+assessment_format: YAML question banks v1, one quiz.yaml per section plus sections/final-domain-quiz.yaml
+sections:
+- id: section-010
+  title: "Installing and Configuring CNI Plugins"
+  curriculum_item: "Installing and Configuring CNI Plugins"
+  capstone: true
+  section_quiz: true
+  modules:
+  - {id: module-01, title: "How The Runtime Finds And Calls A CNI Plugin", lab: "Record The CNI Configuration Of The Nodes", parts: 2}
+  - {id: module-02, title: "Installing A Network Plugin On A Cluster", lab: "Install Flannel On A Cluster Without A Network Plugin", parts: 2}
+- id: section-020
+  title: "Managing IPAM and Pod CIDR Allocation"
+  curriculum_item: "Managing IPAM and Pod CIDR Allocation"
+  capstone: true
+  section_quiz: true
+  modules:
+  - {id: module-01, title: "Pod CIDR Allocation To Nodes", lab: "Record The Pod Ranges Of The Nodes", parts: 2}
+  - {id: module-02, title: "IPAM In The CNI Plugin", lab: "Trace A Pod Address To Its Node Range", parts: 2}
+- id: section-030
+  title: "Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues"
+  curriculum_item: "Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues"
+  capstone: true
+  section_quiz: true
+  modules:
+  - {id: module-01, title: "Inspecting Pod Network Interfaces With ip", lab: "Record The Network Settings Of A Pod", parts: 2}
+  - {id: module-02, title: "Packet-level Tools: iptables And tcpdump", lab: "Record The Service Path Of probe", parts: 2}
+- id: section-040
+  title: "Troubleshooting Pod Connectivity (DNS, pod-to-pod)"
+  curriculum_item: "Troubleshooting Pod Connectivity (DNS, pod-to-pod)"
+  capstone: true
+  section_quiz: true
+  modules:
+  - {id: module-01, title: "Troubleshooting Cluster DNS", lab: "Restore Cluster DNS", parts: 2}
+  - {id: module-02, title: "Troubleshooting Pod-to-Pod Connectivity", lab: "Repair The probe Service", parts: 2}
+- id: section-050
+  title: "Configuring Multi-interface Pods"
+  curriculum_item: "Configuring Multi-interface Pods"
+  capstone: true
+  section_quiz: true
+  modules:
+  - {id: module-01, title: "Multus And Network Attachment Definitions", lab: "Attach A Second Interface To A Pod", parts: 2}
+  - {id: module-02, title: "Troubleshooting Secondary Interfaces", lab: "Repair A Pod With A Failed Attachment", parts: 2}

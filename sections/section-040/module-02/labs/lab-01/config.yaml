@@ -1,0 +1,64 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Repair The probe Service (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-040-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel. The setup points the selector of the Service `probe` at a label that no pod has and changes its target port."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: selector-fixed
+    description: "The Service probe selects the pods with the label app=probe"
+    type: file
+    source: validation/validate-selector-fixed.sh
+    hint: "Compare spec.selector of the Service with the labels of the pod."
+  - name: target-port-fixed
+    description: "The Service probe forwards to port 9898"
+    type: file
+    source: validation/validate-target-port-fixed.sh
+    hint: "The container listens on 9898. Read spec.ports of the Service."
+  - name: endpoints-present
+    description: "The Service probe has at least one endpoint address"
+    type: file
+    source: validation/validate-endpoints-present.sh
+    hint: "List the EndpointSlices with the label kubernetes.io/service-name=probe."
+  - name: probe-workload-unchanged
+    description: "The probe pods keep the label app=probe and are ready"
+    type: file
+    source: validation/validate-probe-workload-unchanged.sh
+    hint: "Repair the Service. Do not change the Deployment."
+  - name: same-namespace-works
+    description: "The pod shuttle reaches the Service probe"
+    type: file
+    source: validation/validate-same-namespace-works.sh
+    hint: "Request http://probe:9898/ from shuttle."
+  - name: cross-namespace-works
+    description: "The pod drifter reaches the Service probe in another namespace"
+    type: file
+    source: validation/validate-cross-namespace-works.sh
+    hint: "Use the name probe.starfleet from drifter."
+teardown:
+  keepCluster: false

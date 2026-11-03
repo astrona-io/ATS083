@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Install Flannel On A Cluster Without A Network Plugin (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-010-02-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with the reference CNI plugins on every node and no network plugin. The nodes are NotReady."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: nodes-ready
+    description: "Both nodes report the Ready condition"
+    type: file
+    source: validation/validate-nodes-ready.sh
+    hint: "Install flannel and wait until kubectl get nodes shows Ready for both nodes."
+  - name: flannel-running
+    description: "The flannel DaemonSet runs on every node with the pinned image"
+    type: file
+    source: validation/validate-flannel-running.sh
+    hint: "Apply the manifest of flannel v0.28.10 without editing it."
+  - name: coredns-available
+    description: "CoreDNS is available after the network plugin starts"
+    type: file
+    source: validation/validate-coredns-available.sh
+    hint: "CoreDNS pods need a pod network. Wait for the Deployment coredns to become available."
+  - name: pod-address-in-range
+    description: "The pod check-a in default runs and has an address from the pod network"
+    type: file
+    source: validation/validate-pod-address-in-range.sh
+    hint: "Create the pod check-a in the namespace default with the image curlimages/curl:8.22.0 and a sleep command."
+teardown:
+  keepCluster: false

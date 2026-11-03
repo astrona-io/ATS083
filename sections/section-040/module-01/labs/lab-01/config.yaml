@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=https://cli.astrona.io/schema/lab-config.schema.json
+# Restore Cluster DNS (LAB). UNTESTED: static checks only. Graded against the live cluster.
+apiVersion: astrona.io/v1
+metadata:
+  name: ats-083-lab-040-01-01
+  docs:
+    prerequisites: prerequisites.md
+    question: question.md
+    solution: solution.md
+runtime:
+  type: kind
+  kind:
+    image: kindest/node:v1.35.0@sha256:452d707d4862f52530247495d180205e029056831160e22870e37e3f6c1ac31f
+    nodes:
+      workers: 1
+    networking:
+      disableDefaultCNI: true
+      podSubnet: 10.244.0.0/16
+bootstrap:
+  init:
+  - name: seed-environment
+    description: "Two-node kind cluster with flannel. The setup changes the cluster zone in the CoreDNS Corefile, so Service names no longer resolve."
+    type: file
+    source: bootstrap/setup.sh
+testing:
+  init:
+  - name: apply-reference-solution
+    description: Apply the reference solution
+    type: file
+    source: solution/apply.sh
+validation:
+  scripts:
+  - name: corefile-zone-fixed
+    description: "The Corefile serves the zone cluster.local again"
+    type: file
+    source: validation/validate-corefile-zone-fixed.sh
+    hint: "Read the ConfigMap coredns in kube-system and look at the kubernetes line."
+  - name: coredns-ready
+    description: "All CoreDNS pods are ready"
+    type: file
+    source: validation/validate-coredns-ready.sh
+    hint: "Check the Deployment coredns in kube-system."
+  - name: full-name-resolves
+    description: "The pod shuttle reaches probe by its full Service name"
+    type: file
+    source: validation/validate-full-name-resolves.sh
+    hint: "A request to http://probe.starfleet.svc.cluster.local:9898/ must return 200. Restart CoreDNS after you change the ConfigMap."
+  - name: short-name-resolves
+    description: "The pod shuttle reaches probe by its short name"
+    type: file
+    source: validation/validate-short-name-resolves.sh
+    hint: "The short name works through the search domains in resolv.conf, so the zone must be correct."
+teardown:
+  keepCluster: false

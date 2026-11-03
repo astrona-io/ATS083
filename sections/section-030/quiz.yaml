@@ -1,0 +1,173 @@
+# Knowledge check for section 030. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats083-030
+course_id: ATS083
+exam_code: CKNE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-030
+  title: "Using Linux Tools (iptables, ip, tcpdump) for Packet-level Issues"
+questions:
+  - id: ats083-030-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain what a pod network namespace is"
+    source_readings:
+      - sections/section-030/module-01/course-01-the-network-namespace-of-a-pod.md
+    prompt: "Which statement about the network namespace of a pod is correct?"
+    options:
+      - id: a
+        text: "All containers of the pod share one namespace, which has its own interfaces, routes and iptables rules."
+        explanation: "Correct. The sandbox holds the namespace and all containers join it."
+      - id: b
+        text: "Each container of a pod has its own namespace and its own address."
+        explanation: "The containers share one namespace and one address."
+      - id: c
+        text: "All pods of a node share the namespace of the node."
+        explanation: "Only pods with hostNetwork: true share the namespace of the node."
+      - id: d
+        text: "The namespace is created by the kube-proxy when the Service is created."
+        explanation: "The container runtime creates it when the sandbox starts."
+    correct_option: a
+    explanation: "One namespace for each pod, shared by all its containers."
+
+  - id: ats083-030-q02
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Explain how a veth pair connects a pod"
+    source_readings:
+      - sections/section-030/module-01/course-01-the-network-namespace-of-a-pod.md
+    prompt: "A pod interface is shown as eth0@if with a number. What does the number identify?"
+    options:
+      - id: a
+        text: "The interface index of the other end of the veth pair on the node."
+        explanation: "Correct. It lets you match the pod to its host interface."
+      - id: b
+        text: "The MTU of the interface."
+        explanation: "The MTU is printed after the word mtu."
+      - id: c
+        text: "The VLAN of the pod network."
+        explanation: "The suffix is not a VLAN id."
+      - id: d
+        text: "The port that the pod listens on."
+        explanation: "Ports are not part of interface names."
+    correct_option: a
+    explanation: "The suffix names the peer interface index."
+
+  - id: ats083-030-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Recognise an MTU fault"
+    source_readings:
+      - sections/section-030/module-01/course-02-reading-links-routes-and-neighbours.md
+    prompt: "A ping between two pods works, but an HTTP response with a large body hangs. Which check of the pod interface is most useful?"
+    options:
+      - id: a
+        text: "ip link show eth0 and compare the MTU with the overlay path."
+        explanation: "Correct. An MTU that is too high drops large packets, while small ones pass."
+      - id: b
+        text: "ip neigh show and look for REACHABLE."
+        explanation: "A neighbour fault stops all traffic, not only large packets."
+      - id: c
+        text: "ip addr show and check the prefix length."
+        explanation: "A wrong prefix length changes which addresses are local, not the packet size."
+      - id: d
+        text: "ip route show and look for a default route."
+        explanation: "A missing default route stops all traffic that leaves the node."
+    correct_option: a
+    explanation: "Small packets pass and large ones are dropped when the MTU is wrong."
+
+  - id: ats083-030-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Name the kube-proxy chains of a Service"
+    source_readings:
+      - sections/section-030/module-02/course-01-iptables-and-the-service-rules.md
+    prompt: "In iptables mode, which chain performs the DNAT to the address of a pod?"
+    options:
+      - id: a
+        text: "A KUBE-SEP chain, one for each endpoint."
+        explanation: "Correct. The chain holds the DNAT rule for its endpoint."
+      - id: b
+        text: "The chain KUBE-SERVICES."
+        explanation: "It only matches the cluster IP and port and jumps to a Service chain."
+      - id: c
+        text: "The chain POSTROUTING of the filter table."
+        explanation: "The DNAT happens in the nat table, before routing."
+      - id: d
+        text: "The chain KUBE-MARK-MASQ."
+        explanation: "It marks packets for source address rewriting."
+    correct_option: a
+    explanation: "KUBE-SERVICES jumps to a KUBE-SVC chain, which jumps to a KUBE-SEP chain that does the DNAT."
+
+  - id: ats083-030-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Read rules without damaging them"
+    source_readings:
+      - sections/section-030/module-02/course-01-iptables-and-the-service-rules.md
+    prompt: "A Service does not answer on one node. What is the safe way to inspect the rules of that node?"
+    options:
+      - id: a
+        text: "Start a debug pod on the node and run iptables-save -t nat, then compare the rules with the Service and the EndpointSlice."
+        explanation: "Correct. It reads the rules and changes nothing."
+      - id: b
+        text: "Run iptables -F on the node to rebuild the rules."
+        explanation: "Flushing removes the rules of all Services until kube-proxy restores them."
+      - id: c
+        text: "Delete the Service and create it again on the node."
+        explanation: "A Service is a cluster object and does not belong to a node."
+      - id: d
+        text: "Run ip route flush in the client pod."
+        explanation: "That removes the routes of the pod and does not inspect the Service rules."
+    correct_option: a
+    explanation: "Read with iptables-save, and do not flush chains."
+
+  - id: ats083-030-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Read a TCP capture"
+    source_readings:
+      - sections/section-030/module-02/course-02-capturing-packets-with-tcpdump.md
+    prompt: "A capture in the client pod shows a repeated SYN to a Service address, and no reply. A capture in the server pod shows no packet at all. What does this show?"
+    options:
+      - id: a
+        text: "The packet is lost between the client and the server, for example by a missing rule or route."
+        explanation: "Correct. The packet left the client and never arrived."
+      - id: b
+        text: "The server refused the connection with a reset."
+        explanation: "A reset would be visible in the capture as an R flag."
+      - id: c
+        text: "The application in the server pod is slow."
+        explanation: "A slow application still receives the SYN."
+      - id: d
+        text: "The handshake worked and the data is lost."
+        explanation: "No SYN-ACK was seen, so no handshake took place."
+    correct_option: a
+    explanation: "Seen on the sender and missing on the receiver means lost between them."
+
+  - id: ats083-030-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Choose where to capture"
+    source_readings:
+      - sections/section-030/module-02/course-02-capturing-packets-with-tcpdump.md
+    prompt: "You want to know whether the DNAT of a Service happened. What do you compare?"
+    options:
+      - id: a
+        text: "The destination address in a capture in the client pod and in a capture in the server pod."
+        explanation: "Correct. The client sees the Service address and the server sees the pod address."
+      - id: b
+        text: "The MAC addresses in one capture in the client pod."
+        explanation: "MAC addresses do not show the DNAT."
+      - id: c
+        text: "The size of the capture file."
+        explanation: "The file size says nothing about address rewriting."
+      - id: d
+        text: "The output of ip addr in the server pod."
+        explanation: "The address of the pod is known, but it does not show what the node rewrote."
+    correct_option: a
+    explanation: "The destination changes from the Service address to the pod address."

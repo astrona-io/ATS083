@@ -1,0 +1,377 @@
+# Knowledge check for section 010. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats083-010
+course_id: ATS083
+exam_code: CKNE
+status: draft
+provenance: Original practice material written for this course; not official exam
+  questions.
+scope:
+  type: section
+  id: section-010
+  title: Installing and Configuring CNI Plugins
+questions:
+- id: ats083-010-q01
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Name where a node keeps CNI configuration files and plugin binaries
+  source_readings:
+  - sections/section-010/module-01/course-01-cni-configuration-and-binary-directories.md
+  prompt: Which pair of default directories holds the CNI configuration files and
+    the CNI plugin binaries on a node?
+  options:
+  - id: a
+    text: "`/opt/cni/bin` for configuration files and `/etc/cni/net.d` for binaries"
+    explanation: Not correct. Configuration files are in `/etc/cni/net.d` and plugin
+      executables are in `/opt/cni/bin`.
+  - id: b
+    text: "`/etc/cni/net.d` for configuration files and `/opt/cni/bin` for binaries"
+    explanation: Correct. Configuration files are in `/etc/cni/net.d` and plugin executables
+      are in `/opt/cni/bin`.
+  - id: c
+    text: "`/var/lib/cni` for both"
+    explanation: Not correct. Configuration files are in `/etc/cni/net.d` and plugin
+      executables are in `/opt/cni/bin`.
+  - id: d
+    text: "`/etc/kubernetes/cni` for configuration files and `/usr/bin` for binaries"
+    explanation: Not correct. Configuration files are in `/etc/cni/net.d` and plugin
+      executables are in `/opt/cni/bin`.
+  correct_option: b
+  explanation: Correct. Configuration files are in `/etc/cni/net.d` and plugin executables
+    are in `/opt/cni/bin`.
+- id: ats083-010-q02
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Say which component calls a CNI plugin
+  source_readings:
+  - sections/section-010/module-01/course-01-cni-configuration-and-binary-directories.md
+  prompt: Which component runs the CNI plugin when a pod sandbox starts?
+  options:
+  - id: a
+    text: The kubelet runs the plugin directly
+    explanation: Not correct. The kubelet asks the runtime to create the sandbox through
+      the CRI, and the runtime calls the plugin.
+  - id: b
+    text: The container runtime runs the plugin
+    explanation: Correct. The kubelet asks the runtime to create the sandbox through
+      the CRI, and the runtime calls the plugin.
+  - id: c
+    text: The API server runs the plugin
+    explanation: Not correct. The kubelet asks the runtime to create the sandbox through
+      the CRI, and the runtime calls the plugin.
+  - id: d
+    text: The scheduler runs the plugin
+    explanation: Not correct. The kubelet asks the runtime to create the sandbox through
+      the CRI, and the runtime calls the plugin.
+  correct_option: b
+  explanation: Correct. The kubelet asks the runtime to create the sandbox through
+    the CRI, and the runtime calls the plugin.
+- id: ats083-010-q03
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain how the runtime chooses between several configuration
+    files
+  source_readings:
+  - sections/section-010/module-01/course-01-cni-configuration-and-binary-directories.md
+  prompt: A node has the files `10-flannel.conflist` and `05-old.conflist` in `/etc/cni/net.d`.
+    Both are valid. Which file does a runtime such as containerd use as the default
+    network?
+  options:
+  - id: a
+    text: "`10-flannel.conflist`, because it is newer"
+    explanation: Not correct. The runtime sorts the file names in lexical order and
+      uses the first valid file.
+  - id: b
+    text: Both files at the same time
+    explanation: Not correct. The runtime sorts the file names in lexical order and
+      uses the first valid file.
+  - id: c
+    text: "`05-old.conflist`, because it sorts first by name"
+    explanation: Correct. The runtime sorts the file names in lexical order and uses
+      the first valid file.
+  - id: d
+    text: Neither, because two files are an error
+    explanation: Not correct. The runtime sorts the file names in lexical order and
+      uses the first valid file.
+  correct_option: c
+  explanation: Correct. The runtime sorts the file names in lexical order and uses
+    the first valid file.
+- id: ats083-010-q04
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain the meaning of `type` in a plugin entry
+  source_readings:
+  - sections/section-010/module-01/course-01-cni-configuration-and-binary-directories.md
+  prompt: In a `.conflist` file, what does the `type` field of a plugin entry identify?
+  options:
+  - id: a
+    text: The name of the Kubernetes network
+    explanation: Not correct. The runtime runs the binary whose file name equals `type`
+      from the binary directory.
+  - id: b
+    text: The IP version of the network
+    explanation: Not correct. The runtime runs the binary whose file name equals `type`
+      from the binary directory.
+  - id: c
+    text: The Kubernetes object that owns the plugin
+    explanation: Not correct. The runtime runs the binary whose file name equals `type`
+      from the binary directory.
+  - id: d
+    text: The file name of the plugin binary in the CNI binary directory
+    explanation: Correct. The runtime runs the binary whose file name equals `type`
+      from the binary directory.
+  correct_option: d
+  explanation: Correct. The runtime runs the binary whose file name equals `type`
+    from the binary directory.
+- id: ats083-010-q05
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain how plugins in a chain share information
+  source_readings:
+  - sections/section-010/module-01/course-02-cni-operations-and-result.md
+  prompt: In a chain of two plugins, how does the second plugin learn what the first
+    plugin did?
+  options:
+  - id: a
+    text: The runtime adds the first result to the configuration of the second plugin
+      as `prevResult`
+    explanation: Correct. Each plugin after the first receives the previous result
+      as `prevResult` in its input configuration.
+  - id: b
+    text: The second plugin reads the first plugin's log file
+    explanation: Not correct. Each plugin after the first receives the previous result
+      as `prevResult` in its input configuration.
+  - id: c
+    text: The second plugin queries the Kubernetes API for the pod address
+    explanation: Not correct. Each plugin after the first receives the previous result
+      as `prevResult` in its input configuration.
+  - id: d
+    text: The two plugins share an environment variable named `CNI_RESULT`
+    explanation: Not correct. Each plugin after the first receives the previous result
+      as `prevResult` in its input configuration.
+  correct_option: a
+  explanation: Correct. Each plugin after the first receives the previous result as
+    `prevResult` in its input configuration.
+- id: ats083-010-q06
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Name the CNI operations
+  source_readings:
+  - sections/section-010/module-01/course-02-cni-operations-and-result.md
+  prompt: Which operation does the runtime call to remove a pod from the network when
+    its sandbox stops?
+  options:
+  - id: a
+    text: "`ADD`"
+    explanation: Not correct. `DEL` removes the container from the network and releases
+      its address.
+  - id: b
+    text: "`CHECK`"
+    explanation: Not correct. `DEL` removes the container from the network and releases
+      its address.
+  - id: c
+    text: "`DEL`"
+    explanation: Correct. `DEL` removes the container from the network and releases
+      its address.
+  - id: d
+    text: "`VERSION`"
+    explanation: Not correct. `DEL` removes the container from the network and releases
+      its address.
+  correct_option: c
+  explanation: Correct. `DEL` removes the container from the network and releases
+    its address.
+- id: ats083-010-q07
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Name how the runtime passes data to a plugin
+  source_readings:
+  - sections/section-010/module-01/course-02-cni-operations-and-result.md
+  prompt: How does the runtime pass the operation and the network configuration to
+    a plugin binary?
+  options:
+  - id: a
+    text: The operation in the variable `CNI_COMMAND` and the configuration on standard
+      input
+    explanation: Correct. The operation and call details are environment variables,
+      and the JSON configuration is sent on stdin.
+  - id: b
+    text: Both as command-line arguments
+    explanation: Not correct. The operation and call details are environment variables,
+      and the JSON configuration is sent on stdin.
+  - id: c
+    text: The operation on standard input and the configuration in a file named by
+      `CNI_PATH`
+    explanation: Not correct. The operation and call details are environment variables,
+      and the JSON configuration is sent on stdin.
+  - id: d
+    text: Both through a local HTTP request to the plugin
+    explanation: Not correct. The operation and call details are environment variables,
+      and the JSON configuration is sent on stdin.
+  correct_option: a
+  explanation: Correct. The operation and call details are environment variables,
+    and the JSON configuration is sent on stdin.
+- id: ats083-010-q08
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Explain how flannel delegates the work of an ADD call
+  source_readings:
+  - sections/section-010/module-01/course-02-cni-operations-and-result.md
+  prompt: The `flannel` CNI plugin receives an `ADD` call. What does it do with the
+    file `/run/flannel/subnet.env`?
+  options:
+  - id: a
+    text: It writes the pod address into the file
+    explanation: Not correct. The plugin reads the subnet of the node and delegates
+      to `bridge` with `host-local` using that range.
+  - id: b
+    text: It reads the node range from it and builds the configuration for the `bridge`
+      plugin, which it then runs with `host-local`
+    explanation: Correct. The plugin reads the subnet of the node and delegates to
+      `bridge` with `host-local` using that range.
+  - id: c
+    text: It uploads the file to the API server
+    explanation: Not correct. The plugin reads the subnet of the node and delegates
+      to `bridge` with `host-local` using that range.
+  - id: d
+    text: It deletes the file after each call
+    explanation: Not correct. The plugin reads the subnet of the node and delegates
+      to `bridge` with `host-local` using that range.
+  correct_option: b
+  explanation: Correct. The plugin reads the subnet of the node and delegates to `bridge`
+    with `host-local` using that range.
+- id: ats083-010-q09
+  type: single_choice
+  difficulty: beginner
+  learning_objective: Explain why a node is NotReady without a plugin
+  source_readings:
+  - sections/section-010/module-02/course-01-why-nodes-stay-notready.md
+  prompt: A new cluster has no network plugin and `/etc/cni/net.d` is empty. Why are
+    the nodes `NotReady`?
+  options:
+  - id: a
+    text: The scheduler is stopped
+    explanation: Not correct. With no valid CNI configuration the runtime reports
+      `NetworkReady=false`, and the kubelet reports the node as not ready.
+  - id: b
+    text: The API server has no certificate
+    explanation: Not correct. With no valid CNI configuration the runtime reports
+      `NetworkReady=false`, and the kubelet reports the node as not ready.
+  - id: c
+    text: The runtime reports that the network is not ready, and the kubelet sets
+      `Ready` to `False`
+    explanation: Correct. With no valid CNI configuration the runtime reports `NetworkReady=false`,
+      and the kubelet reports the node as not ready.
+  - id: d
+    text: The kube-proxy DaemonSet failed to start
+    explanation: Not correct. With no valid CNI configuration the runtime reports
+      `NetworkReady=false`, and the kubelet reports the node as not ready.
+  correct_option: c
+  explanation: Correct. With no valid CNI configuration the runtime reports `NetworkReady=false`,
+    and the kubelet reports the node as not ready.
+- id: ats083-010-q10
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Say which pods run without a pod network
+  source_readings:
+  - sections/section-010/module-02/course-01-why-nodes-stay-notready.md
+  prompt: On a node that has no network plugin, which pods can still run?
+  options:
+  - id: a
+    text: Every pod that tolerates the taint
+    explanation: Not correct. A pod on the node network does not need a CNI plugin.
+      A pod that only tolerates the taint still needs a sandbox network.
+  - id: b
+    text: 'Pods that use `hostNetwork: true`, such as static control plane pods'
+    explanation: Correct. A pod on the node network does not need a CNI plugin. A
+      pod that only tolerates the taint still needs a sandbox network.
+  - id: c
+    text: Only pods in the `kube-system` namespace
+    explanation: Not correct. A pod on the node network does not need a CNI plugin.
+      A pod that only tolerates the taint still needs a sandbox network.
+  - id: d
+    text: Only pods that have a Service
+    explanation: Not correct. A pod on the node network does not need a CNI plugin.
+      A pod that only tolerates the taint still needs a sandbox network.
+  correct_option: b
+  explanation: Correct. A pod on the node network does not need a CNI plugin. A pod
+    that only tolerates the taint still needs a sandbox network.
+- id: ats083-010-q11
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Explain how flannel installs its configuration
+  source_readings:
+  - sections/section-010/module-02/course-02-installing-and-verifying-flannel.md
+  prompt: Which part of the flannel DaemonSet pod writes `/etc/cni/net.d/10-flannel.conflist`
+    on the node?
+  options:
+  - id: a
+    text: The main container `kube-flannel` when it starts
+    explanation: Not correct. `install-cni` copies `cni-conf.json` from the mounted
+      ConfigMap to the host directory.
+  - id: b
+    text: The container runtime when it detects the ConfigMap
+    explanation: Not correct. `install-cni` copies `cni-conf.json` from the mounted
+      ConfigMap to the host directory.
+  - id: c
+    text: The init container `install-cni`
+    explanation: Correct. `install-cni` copies `cni-conf.json` from the mounted ConfigMap
+      to the host directory.
+  - id: d
+    text: The kubelet, from the ConfigMap `kube-flannel-cfg`
+    explanation: Not correct. `install-cni` copies `cni-conf.json` from the mounted
+      ConfigMap to the host directory.
+  correct_option: c
+  explanation: Correct. `install-cni` copies `cni-conf.json` from the mounted ConfigMap
+    to the host directory.
+- id: ats083-010-q12
+  type: single_choice
+  difficulty: advanced
+  learning_objective: Explain how flannel gets the pod range of a node
+  source_readings:
+  - sections/section-010/module-02/course-02-installing-and-verifying-flannel.md
+  prompt: Flannel runs with `--kube-subnet-mgr`. Where does it read the pod address
+    range of its node?
+  options:
+  - id: a
+    text: From a separate etcd cluster that flannel creates
+    explanation: Not correct. With the Kubernetes subnet manager flannel reads the
+      range that the controller manager stored in the Node object.
+  - id: b
+    text: From a file that the administrator writes on each node
+    explanation: Not correct. With the Kubernetes subnet manager flannel reads the
+      range that the controller manager stored in the Node object.
+  - id: c
+    text: From the DNS records of CoreDNS
+    explanation: Not correct. With the Kubernetes subnet manager flannel reads the
+      range that the controller manager stored in the Node object.
+  - id: d
+    text: From the field `spec.podCIDR` of the Node object
+    explanation: Correct. With the Kubernetes subnet manager flannel reads the range
+      that the controller manager stored in the Node object.
+  correct_option: d
+  explanation: Correct. With the Kubernetes subnet manager flannel reads the range
+    that the controller manager stored in the Node object.
+- id: ats083-010-q13
+  type: single_choice
+  difficulty: intermediate
+  learning_objective: Choose the right verification for the overlay
+  source_readings:
+  - sections/section-010/module-02/course-02-installing-and-verifying-flannel.md
+  prompt: All nodes are `Ready` and a new pod has an address in `10.244.0.0/16`. Which
+    check still proves that the overlay carries traffic between nodes?
+  options:
+  - id: a
+    text: Reading the flannel ConfigMap
+    explanation: Not correct. Only a cross-node request uses the VXLAN path.
+  - id: b
+    text: Listing the CNI binaries
+    explanation: Not correct. Only a cross-node request uses the VXLAN path.
+  - id: c
+    text: Counting the flannel pods
+    explanation: Not correct. Only a cross-node request uses the VXLAN path.
+  - id: d
+    text: Sending a request from a pod on one node to a pod on the other node
+    explanation: Correct. Only a cross-node request uses the VXLAN path.
+  correct_option: d
+  explanation: Correct. Only a cross-node request uses the VXLAN path.

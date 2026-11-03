@@ -224,19 +224,17 @@ The outline is a starting point. Split broad objectives into several modules
 when writing content. Keep every objective covered and update the manifest and
 curriculum map together.
 
-### Preparation status
+### Scope and build status
 
-This is the first preparation commit. The introduction and section files are
-placeholders. Technical sections carry `draft: true` until their material is
-written and reviewed. There are no runnable playgrounds, graded labs, quizzes,
-or tested reference solutions yet. Do not claim that any environment has been
-installed or verified.
+The maintainer lifted the earlier reading-only limit on 2026-11-03. Playgrounds, graded labs, capstone labs and quizzes are in scope. The course has five sections of two modules each. Each module has a landing page, two parts, a summary, a playground and a graded lab. Each section has a capstone lab and a `quiz.yaml`, and the course has `sections/final-domain-quiz.yaml`.
+
+Technical pages carry `draft: true` until reviewed. Every lab and playground is UNTESTED: only static checks were run (`astrona validate`, `bash -n`, a YAML parse). Do not claim that any environment has been run or verified.
 
 CKNE is under development. Its published domains are provisional. Recheck the development page before building content, and keep this course outside the 16 current Golden Kubestronaut requirements.
 
 ### Environment plans and terminology
 
-Plan Linux network tools, Kubernetes, CNI plugins and Gateway API. Multiple interfaces and cross-cluster exercises may need additional nodes or clusters. The exam is under development; verify its format and versions before authoring.
+Every lab and playground starts a two-node kind cluster (`kindest/node:v1.35.0`) without a default network plugin. The bootstrap installs the reference CNI plugins v1.9.1 on every node with a DaemonSet, because the kind node image has only host-local, loopback, ptp and portmap. It then installs flannel v0.28.10 from a checksum-verified manifest, and Multus v4.3.1 in section 050. Example workloads use podinfo 6.15.0 and curl 8.22.0. Flannel does not enforce NetworkPolicy, so no lab depends on it. The generator for the environment files is kept outside the repository, so edit the generated files directly. The exam is under development; verify its format and versions before authoring.
 
 Define acronyms and use the technology's own terms. Example workload names may
 use `bridge`, `scout`, `shuttle`, `probe`, `starfleet` and `outpost` when an
@@ -263,23 +261,21 @@ resource, protocol and tool names before creating a lab; each lab needs 4 to 8
 relevant tags. Use 2 or 3 learning goals beginning with verbs and 1 to 4 official
 documentation resources. Never invent a quiz answer or command output.
 
-### Running things when environments exist
+### Running things
 
-These are the naming conventions for future environments, not runnable examples
-in this preparation commit:
+These are the naming conventions of the environments:
 
 - Playground: `ats-083-playground-<section>-<module>`.
-- Lab: `ats-083-lab-<section>-<module>-<lab>`.
+- Lab: `ats-083-lab-<section>-<module>-<lab>`; capstone: `ats-083-lab-<section>-cap`.
 - Repository: `ssh://git@github.com/astrona-io/ATS083.git`.
 - Local author commands: `astrona run -c <environment-path>`,
   `astrona validate -c <environment-path>` and `astrona test -c <lab-path>`.
 - Learner commands: `astrona run --git ssh://git@github.com/astrona-io/ATS083.git -c <environment-path>`,
   `astrona submit -c <lab-path>` and `astrona destroy <metadata.name>`.
 
-Confirm command flags with the installed CLI before documenting them. Every
-completed lab must pass validation and its reference-solution check. Grade the
-behaviour the task asks for. Never pin a bootstrap script to a maintainer's kube
-context. Run one test cluster at a time on the maintainer's machine and never
+Every completed lab must pass validation and its reference-solution check. Grade the
+behaviour the task asks for. Bootstrap scripts refuse to run on another kube
+context than the one of their own environment. Run one test cluster at a time on the maintainer machine and never
 touch an environment you did not create.
 
 ### Trusted sources
@@ -295,8 +291,4 @@ author research; learner pages follow the shared rules for outside links.
 
 ### Authoring workflow
 
-Plan the domain, refine its outline, build one module at a time, then write and
-check its labs, playground, quiz and assessment. The `astrona-course-*` skills
-may support these jobs when installed. Preparation does not imply they have
-been run. Keep lessons and environments as placeholders until the maintainer
-starts content authoring.
+Plan the domain, build one module at a time, then write and check its labs, playground and quiz. The `astrona-course-*` skills support these jobs. Build progress is recorded in `.astrona/build-state.yaml`. Labs are built untested on purpose: run `astrona test` on them only when the maintainer asks.

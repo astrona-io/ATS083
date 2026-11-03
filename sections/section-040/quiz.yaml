@@ -1,0 +1,173 @@
+# Knowledge check for section 040. Listed in astrona.yaml as a `type: quiz` entry after the capstone lab.
+schema_version: 1
+kind: question_bank
+id: ats083-040
+course_id: ATS083
+exam_code: CKNE
+status: draft
+provenance: Original practice material written for this course; not official exam questions.
+scope:
+  type: section
+  id: section-040
+  title: "Troubleshooting Pod Connectivity (DNS, pod-to-pod)"
+questions:
+  - id: ats083-040-q01
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Explain how a short Service name is completed"
+    source_readings:
+      - sections/section-040/module-01/course-01-how-pods-resolve-names.md
+    prompt: "A pod in the namespace outpost requests http://probe:9898/ and the Service probe exists only in the namespace starfleet. What happens?"
+    options:
+      - id: a
+        text: "The name does not resolve, because the search list starts with the namespace outpost."
+        explanation: "Correct. The pod must use probe.starfleet or the full name."
+      - id: b
+        text: "The name resolves, because Service names are unique in the cluster."
+        explanation: "Service names are unique only inside a namespace."
+      - id: c
+        text: "The request is refused by the Service."
+        explanation: "The failure happens at the resolver, before any Service is contacted."
+      - id: d
+        text: "The kubelet redirects the request to the right namespace."
+        explanation: "The kubelet does not redirect requests."
+    correct_option: a
+    explanation: "The search list is built from the namespace of the pod."
+
+  - id: ats083-040-q02
+    type: single_choice
+    difficulty: beginner
+    learning_objective: "Name the object that holds the CoreDNS configuration"
+    source_readings:
+      - sections/section-040/module-01/course-01-how-pods-resolve-names.md
+    prompt: "Where is the Corefile of CoreDNS stored in a typical cluster?"
+    options:
+      - id: a
+        text: "In the ConfigMap coredns in the namespace kube-system."
+        explanation: "Correct. It is mounted into the CoreDNS pods under the key Corefile."
+      - id: b
+        text: "In the Service kube-dns."
+        explanation: "The Service only gives a stable address to the CoreDNS pods."
+      - id: c
+        text: "In /etc/resolv.conf of every pod."
+        explanation: "That file tells a pod which server to ask and does not configure CoreDNS."
+      - id: d
+        text: "In the kube-proxy configuration."
+        explanation: "kube-proxy does not hold DNS settings."
+    correct_option: a
+    explanation: "The ConfigMap coredns holds the Corefile."
+
+  - id: ats083-040-q03
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Diagnose a wrong zone in the Corefile"
+    source_readings:
+      - sections/section-040/module-01/course-02-diagnosing-dns-failures.md
+    prompt: "All CoreDNS pods are ready. Names such as probe.starfleet.svc.cluster.local return NXDOMAIN, while external names resolve. What is the most likely cause?"
+    options:
+      - id: a
+        text: "The zone in the kubernetes line of the Corefile is not cluster.local."
+        explanation: "Correct. CoreDNS forwards the cluster name upstream, where it does not exist."
+      - id: b
+        text: "The CoreDNS pods are in the wrong namespace."
+        explanation: "Then the Service would have no endpoints and queries would time out."
+      - id: c
+        text: "The forward line is missing."
+        explanation: "Then external names would fail, not cluster names."
+      - id: d
+        text: "The pod network overlaps the Service network."
+        explanation: "Overlap does not produce a negative answer for one zone."
+    correct_option: a
+    explanation: "A wrong zone sends cluster names to the upstream server."
+
+  - id: ats083-040-q04
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Tell a negative answer from a timeout"
+    source_readings:
+      - sections/section-040/module-01/course-02-diagnosing-dns-failures.md
+    prompt: "A lookup returns NXDOMAIN. What does this tell you?"
+    options:
+      - id: a
+        text: "CoreDNS answered and does not know the name."
+        explanation: "Correct. The server works, so look at the name, the zone or the Service."
+      - id: b
+        text: "The query never reached CoreDNS."
+        explanation: "That case gives a timeout and no answer."
+      - id: c
+        text: "The kube-dns Service has no endpoints."
+        explanation: "Then no answer would arrive at all."
+      - id: d
+        text: "The pod uses dnsPolicy None."
+        explanation: "That can cause a timeout but it does not explain a negative answer."
+    correct_option: a
+    explanation: "A negative answer is an answer from a working server."
+
+  - id: ats083-040-q05
+    type: single_choice
+    difficulty: intermediate
+    learning_objective: "Find why a Service has no endpoints"
+    source_readings:
+      - sections/section-040/module-02/course-01-how-service-traffic-reaches-a-pod.md
+    prompt: "A Service has no endpoints, and the pods are Running and ready. What should you compare first?"
+    options:
+      - id: a
+        text: "The selector of the Service and the labels of the pods in the same namespace."
+        explanation: "Correct. The selector decides which pods become endpoints."
+      - id: b
+        text: "The ClusterIP of the Service and the pod address."
+        explanation: "They are different by design."
+      - id: c
+        text: "The resolv.conf of the client pod."
+        explanation: "The resolver does not fill endpoints."
+      - id: d
+        text: "The pod CIDR of the node."
+        explanation: "The range does not decide which pods are endpoints."
+    correct_option: a
+    explanation: "No matching labels means no endpoints."
+
+  - id: ats083-040-q06
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Separate the Service layer from the pod network"
+    source_readings:
+      - sections/section-040/module-02/course-02-diagnosing-connection-failures.md
+    prompt: "A request to the pod address works, and a request to the ClusterIP of the Service fails. Which layer is most likely at fault?"
+    options:
+      - id: a
+        text: "The Service objects or the rules that kube-proxy writes from them."
+        explanation: "Correct. The pod and the pod network work."
+      - id: b
+        text: "The overlay between the nodes."
+        explanation: "The request by pod address would fail too."
+      - id: c
+        text: "The application in the pod."
+        explanation: "The application answered on the pod address."
+      - id: d
+        text: "The cluster DNS."
+        explanation: "Both tests used an address, not a name."
+    correct_option: a
+    explanation: "Bypassing the Service separates the two layers."
+
+  - id: ats083-040-q07
+    type: single_choice
+    difficulty: advanced
+    learning_objective: "Change the DNS policy of a running pod"
+    source_readings:
+      - sections/section-040/module-01/course-02-diagnosing-dns-failures.md
+    prompt: "One pod fails every lookup while other pods in the namespace work. Its dnsPolicy is None with a wrong nameserver. How do you repair it?"
+    options:
+      - id: a
+        text: "Delete the pod and create it again without dnsPolicy None."
+        explanation: "Correct. The field cannot be changed on a running pod."
+      - id: b
+        text: "Patch dnsPolicy to ClusterFirst on the running pod."
+        explanation: "The field is immutable on a running pod."
+      - id: c
+        text: "Restart CoreDNS."
+        explanation: "The pod does not use CoreDNS, so a restart does not help."
+      - id: d
+        text: "Edit the Corefile."
+        explanation: "The Corefile is not used by this pod."
+    correct_option: a
+    explanation: "Recreate the pod to change its DNS policy."
