@@ -565,7 +565,7 @@ modules:
     difficulty: intermediate
     estimated_duration: 30m
     topic: core-infrastructure-and-cni
-    task_kind: troubleshoot
+    task_kind: troubleshooting
     learning_goals:
     - "Read the events of a pod that cannot create its sandbox"
     - "Find an attachment definition that is missing in the namespace of the pod"
